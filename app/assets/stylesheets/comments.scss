@@ -2,6 +2,9 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+// ----------------------------------------------------------------
+// list
+
 .comment-item {
   background-color: #fff;
   border: solid 1px #ccc;
@@ -24,5 +27,24 @@
     &:hover {
       text-decoration: underline;
     }
+  }
+}
+
+// ----------------------------------------------------------------
+// form
+
+.comment-form {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1em;
+  width: 100%;
+
+  .comment-form-body {
+    min-height: 3em;
+    min-width: 400px;
+  }
+
+  .comment-form-submit {
+    width: 50px;
   }
 }

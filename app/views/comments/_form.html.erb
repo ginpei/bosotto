@@ -11,11 +11,8 @@
     </div>
   <% end %>
 
-  <div class="field">
-    <%= f.label :body %><br>
-    <%= f.text_field :body %>
-  </div>
-  <div class="actions">
-    <%= f.submit %>
+  <div class="comment-form">
+    <%= f.text_area :body, class: 'comment-form-body' %>
+    <%= f.submit 'Post', class: 'comment-form-submit' %>
   </div>
 <% end %>

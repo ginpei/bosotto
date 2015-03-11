@@ -2,7 +2,7 @@
 
 <h1>Listing Comments</h1>
 
-<%= link_to 'New Comment', new_comment_path %>
+<%= render 'form' %>
 
 <div class="comment-list">
   <% @comments.each do |comment| %>

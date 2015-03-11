@@ -3,9 +3,18 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 .comment-item {
+  background-color: #fff;
   border: solid 1px #ccc;
+  border-bottom-style: none;
   padding: 1em;
-  margin-bottom: -1px;
+
+  &:hover {
+    box-shadow: 0 0 10px rgba(0,0,0,0.05) inset;
+  }
+
+  &:last-child {
+    border-bottom-style: solid;
+  }
 
   > footer a {
     color: #999;

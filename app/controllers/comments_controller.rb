@@ -4,7 +4,7 @@ class CommentsController < ApplicationController
   # GET /comments
   # GET /comments.json
   def index
-    @comments = Comment.all.reverse
+    @comments = Comment.all.order('created_at DESC').limit(50)
     @comment = Comment.new
   end
 

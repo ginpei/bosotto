@@ -41,7 +41,9 @@
 
   .comment-form-body {
     min-height: 3em;
-    min-width: 400px;
+    max-width: 400px;
+    min-width: 200px;
+    width: 60%;
   }
 
   .comment-form-submit {

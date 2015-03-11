@@ -8,7 +8,7 @@
   <% @comments.each do |comment| %>
     <article class="comment-item">
       <div class="body"><%= comment.body %></div>
-      <footer><%= link_to comment.created_at, comment %></footer>
+      <footer><%= link_to comment.created_at.in_time_zone('Tokyo'), comment %></footer>
     </article>
   <% end %>
 </div>

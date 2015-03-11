@@ -12,7 +12,7 @@
   <% end %>
 
   <div class="comment-form">
-    <%= f.text_area :body, class: 'comment-form-body' %>
+    <%= f.text_area :body, autofocus: true, class: 'comment-form-body' %>
     <%= f.submit 'Post', class: 'comment-form-submit' %>
   </div>
 <% end %>

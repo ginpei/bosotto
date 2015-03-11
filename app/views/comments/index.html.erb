@@ -4,6 +4,8 @@
 
 <%= render 'form' %>
 
+<div class="time-diff js-time-diff"></div>
+
 <div class="comment-list">
   <% @comments.each do |comment| %>
     <article class="comment-item">
@@ -12,3 +14,7 @@
     </article>
   <% end %>
 </div>
+
+<div class="js-data" data-data="<%= {
+  serverTime: Time.new.iso8601
+}.to_json %>"></div>

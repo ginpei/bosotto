@@ -8,4 +8,6 @@ $(document).on 'page:change', (event)->
   diffS = parseInt(diff/1000, 10)
   diffMs = Math.abs(diff - diffS*1000)
   diffText = (if diffS>0 then '+' else '') + diffS + '.' + diffMs
+
   $('.js-time-diff').text(diffText)
+  alert('WARN: Serve is delayed!') if Math.abs(diff) > 60000

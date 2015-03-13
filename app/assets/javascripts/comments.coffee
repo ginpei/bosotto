@@ -2,6 +2,9 @@
 # All this logic will automatically be available in application.js.
 
 $(document).on 'page:change', (event)->
+  $('.js-refresh').on 'click', (event)->
+    location.reload()
+
   data = JSON.parse($('.js-data').attr('data-data'))
   serverTime = new Date(data.serverTime)
   diff = serverTime - Date.now()

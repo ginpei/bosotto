@@ -4,7 +4,10 @@
 
 <%= render 'form' %>
 
-<div class="informations"><span class="time-diff js-time-diff"></span></div>
+<div class="informations">
+  <button class="refresh js-refresh">Refresh</button>
+  <span class="time-diff js-time-diff"></span>
+</div>
 
 <div class="comment-list">
   <% @comments.each do |comment| %>

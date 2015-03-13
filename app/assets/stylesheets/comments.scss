@@ -52,10 +52,17 @@
 }
 
 .informations {
-  height: 1em;
-  line-height: 1em;
+  color: #ccc;
   text-align: right;
 }
-.time-diff {
-  color: #ccc;
+.refresh {
+  background-color: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  display: inline;
+  text-decoration: underline;
+}
+.refresh:hover {
+  color: #9cf;
 }

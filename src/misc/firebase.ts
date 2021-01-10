@@ -2,6 +2,27 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 
+export type DocumentReference<
+  T = firebase.firestore.DocumentData
+> = firebase.firestore.DocumentReference<T>;
+
+export type CollectionReference<
+  T = firebase.firestore.DocumentData
+> = firebase.firestore.CollectionReference<T>;
+
+export type Query<
+  T = firebase.firestore.DocumentData
+> = firebase.firestore.Query<T>;
+
+export interface DataRecord {
+  createdAt: Timestamp;
+  id: string;
+}
+
+export class Timestamp extends firebase.firestore.Timestamp {}
+
+export const zeroTimestamp = new Timestamp(0, 0);
+
 // eslint-disable-next-line import/no-mutable-exports, @typescript-eslint/no-explicit-any
 export let db: firebase.firestore.Firestore = null as any;
 // eslint-disable-next-line import/no-mutable-exports, @typescript-eslint/no-explicit-any
@@ -34,4 +55,12 @@ export function initializeFirebase(): firebase.app.App {
   }
 
   return app;
+}
+
+export function createDataRecord(initial?: Partial<DataRecord>): DataRecord {
+  return {
+    createdAt: zeroTimestamp,
+    id: "",
+    ...initial,
+  };
 }

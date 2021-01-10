@@ -1,35 +1,65 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { auth, db } from "../misc/firebase";
+import { noop } from "../misc/misc";
+import {
+  createTalk,
+  getUserTalkCollection,
+  postTalk,
+  ssToTalk,
+  Talk,
+} from "../models/Talk";
 import { AppHeader } from "../shared/layouts/AppHeader";
+import { OnTalkEvent, TalkForm } from "./TalkForm";
 
 export const HomePage: React.FC = () => {
+  const [userId, setUserId] = useState(auth.currentUser?.uid);
   const [email] = useState("test@example.com");
   const [password] = useState("123456");
+  const [newTalk, setNewTalk] = useState(createTalk());
+  const [talks, setTalks] = useState<Talk[]>([]);
 
   const onLogInClick = async () => {
-    console.log(`# auth...`);
     await auth.signInWithEmailAndPassword(email, password);
-    console.log(`# auth done.`);
   };
 
   const onLogOutClick = async () => {
     await auth.signOut();
   };
 
-  const onFetchDataClick = async () => {
-    console.log(`# data...`);
-    const ss = await db.collection("items").get();
-    const dataList = ss.docs.map((v) => ({ id: v.id, ...v.data() }));
-    console.log("# dataList", dataList);
-    console.log(`# data done.`);
+  const onNewTalkChange: OnTalkEvent = (talk) => {
+    setNewTalk(talk);
+  };
+
+  const onNewTalkSubmit: OnTalkEvent = async (talk) => {
+    const uid = auth.currentUser?.uid;
+    if (!uid) {
+      return;
+    }
+
+    await postTalk(uid, talk);
+    setNewTalk(createTalk());
   };
 
   useEffect(() => {
     return auth.onAuthStateChanged((user) => {
-      console.log(`# user`, user);
+      setUserId(user?.uid);
     });
   }, []);
+
+  useEffect(() => {
+    if (!userId) {
+      setTalks([]);
+      return noop;
+    }
+
+    return getUserTalkCollection(userId)
+      .orderBy("createdAt", "desc")
+      .onSnapshot((ss) => {
+        const list = ss.docs.map((v) => ssToTalk(v));
+        setTalks(list);
+      });
+  }, [userId]);
 
   return (
     <div className="HomePage">
@@ -46,13 +76,28 @@ export const HomePage: React.FC = () => {
             <button onClick={onLogOutClick}>Log out</button>
           </p>
         </section>
-        <section>
-          <h2>Firestore</h2>
-          <p>
-            <button onClick={onFetchDataClick}>Fetch data</button>
-          </p>
+        <section className="HomePage-timeline">
+          <TalkForm
+            onSubmit={onNewTalkSubmit}
+            onTalkChange={onNewTalkChange}
+            talk={newTalk}
+          />
+          {talks.map((talk) => (
+            <TimelineTalk key={talk.id} talk={talk} />
+          ))}
         </section>
       </div>
+    </div>
+  );
+};
+
+const TimelineTalk: React.FC<{ talk: Talk }> = ({ talk }) => {
+  return (
+    <div
+      className="TimelineTalk"
+      style={{ border: "solid 1px gray", margin: "1rem 0", padding: "1rem" }}
+    >
+      {talk.body}
     </div>
   );
 };

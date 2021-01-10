@@ -21,3 +21,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# TODO remove later
+# https://github.com/facebook/create-react-app/pull/10177
+.eslintcache

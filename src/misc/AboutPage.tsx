@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
 import { AppHeader } from "../shared/layouts/AppHeader";
 
-export const HomePage: React.FC = () => {
+export const AboutPage: React.FC = () => {
   return (
-    <div className="HomePage">
+    <div className="AboutPage">
       <AppHeader />
       <div className="ui-container">
-        <h1>Hello World!</h1>
+        <h1>About</h1>
         <p>
-          <Link to="/about">About</Link>
+          <Link to="/">Home</Link>
         </p>
       </div>
     </div>

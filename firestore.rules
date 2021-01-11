@@ -5,5 +5,14 @@ service cloud.firestore {
       allow read: if resource.data.userId == request.auth.uid;
       allow create: if request.resource.data.userId == request.auth.uid;
     }
+
+    match /tasks/{taskId} {
+      allow create: if request.resource.data.userId == request.auth.uid;
+      allow read: if resource.data.userId == request.auth.uid;
+      allow update: if
+        resource.data.userId == request.auth.uid &&
+        resource.data.userId == request.resource.data.userId;
+      allow delete: if resource.data.userId == request.auth.uid;
+    }
   }
 }

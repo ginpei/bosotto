@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { auth } from "../misc/firebase";
 import { LogInForm } from "./LogInForm";
+import { TaskList } from "./TaskList";
 
 export const Dashboard: React.FC = () => {
   const [userId, setUserId] = useState(auth.currentUser?.uid);
@@ -25,6 +26,10 @@ export const Dashboard: React.FC = () => {
       ) : (
         <LogInForm />
       )}
+      <section>
+        <h2>Tasks</h2>
+        <TaskList />
+      </section>
     </section>
   );
 };

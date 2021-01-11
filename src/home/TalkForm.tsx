@@ -3,10 +3,11 @@ import { Talk } from "../models/Talk";
 export type OnTalkEvent = (talk: Talk) => void;
 
 export const TalkForm: React.FC<{
+  disabled: boolean;
   onSubmit: OnTalkEvent;
   onTalkChange: OnTalkEvent;
   talk: Talk;
-}> = ({ onSubmit, onTalkChange, talk }) => {
+}> = ({ disabled, onSubmit, onTalkChange, talk }) => {
   const onBodyChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     onTalkChange({
       ...talk,
@@ -22,10 +23,14 @@ export const TalkForm: React.FC<{
   return (
     <form className="TalkForm" onSubmit={onFormSubmit}>
       <p>
-        <textarea value={talk.body} onChange={onBodyChange}></textarea>
+        <textarea
+          disabled={disabled}
+          onChange={onBodyChange}
+          value={talk.body}
+        ></textarea>
       </p>
       <p>
-        <button>Post</button>
+        <button disabled={disabled}>Post</button>
       </p>
     </form>
   );

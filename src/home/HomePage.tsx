@@ -18,6 +18,7 @@ export const HomePage: React.FC = () => {
   const [password] = useState("123456");
   const [newTalk, setNewTalk] = useState(createTalk());
   const [talks, setTalks] = useState<Talk[]>([]);
+  const [submitting, setSubmitting] = useState(false);
 
   const onLogInClick = async () => {
     await auth.signInWithEmailAndPassword(email, password);
@@ -37,8 +38,13 @@ export const HomePage: React.FC = () => {
       return;
     }
 
-    await postTalk(uid, talk);
-    setNewTalk(createTalk());
+    setSubmitting(true);
+    try {
+      await postTalk(uid, talk);
+      setNewTalk(createTalk());
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -78,6 +84,7 @@ export const HomePage: React.FC = () => {
         </section>
         <section className="HomePage-timeline">
           <TalkForm
+            disabled={submitting}
             onSubmit={onNewTalkSubmit}
             onTalkChange={onNewTalkChange}
             talk={newTalk}

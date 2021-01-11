@@ -75,7 +75,7 @@ export const Timeline: React.FC = () => {
         />
       </div>
       {talks.map((talk) => (
-        <div className="Timeline-talkItem">
+        <div className="Timeline-talkItem" key={talk.id}>
           <TimelineTalk key={talk.id} talk={talk} />
         </div>
       ))}

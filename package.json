@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "lint": "eslint . && tsc",
-    "dev": "react-scripts start",
-    "start": "firebase emulators:exec 'npm run dev' --ui --import .firebase-data --export-on-exit",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "react-scripts start",
+    "eject": "react-scripts eject",
+    "lint": "eslint . && tsc",
+    "start": "firebase emulators:exec 'npm run dev' --ui --import .firebase-data --export-on-exit",
+    "test": "react-scripts test"
   },
   "eslintConfig": {
     "extends": [

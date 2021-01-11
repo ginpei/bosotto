@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { auth } from "../misc/firebase";
+import "./Dashboard.scss";
 import { LogInForm } from "./LogInForm";
 import { TaskList } from "./TaskList";
 
@@ -18,16 +19,21 @@ export const Dashboard: React.FC = () => {
 
   return (
     <section className="Dashboard">
-      <h1>Dashboard</h1>
-      {userId ? (
-        <p>
-          <button onClick={onLogOutClick}>Log out</button>
-        </p>
-      ) : (
-        <LogInForm />
-      )}
-      <section>
-        <h2>Tasks</h2>
+      <header className="Dashboard-header ui-container">
+        <h1 className="Dashboard-title">Dashboard</h1>
+      </header>
+      <section className="ui-container">
+        <h2 className="Dashboard-heading">Account</h2>
+        {userId ? (
+          <p>
+            <button onClick={onLogOutClick}>Log out</button>
+          </p>
+        ) : (
+          <LogInForm />
+        )}
+      </section>
+      <section className="ui-container">
+        <h2 className="Dashboard-heading">Tasks</h2>
         <TaskList />
       </section>
     </section>

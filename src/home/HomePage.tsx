@@ -11,7 +11,7 @@ export const HomePage: React.FC = () => {
         <div className="HomePage-timeline">
           <Timeline />
         </div>
-        <div className="HomePage-account">
+        <div className="HomePage-dashboard">
           <Dashboard />
         </div>
       </div>

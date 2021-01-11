@@ -26,7 +26,7 @@ export const Timeline: React.FC = () => {
     setNewTalk(talk);
   };
 
-  const onNewTalkSubmit: OnTalkEvent = async (talk) => {
+  const onNewTalkSubmit: OnTalkEvent = async (talk, currentTarget) => {
     const uid = auth.currentUser?.uid;
     if (!uid) {
       return;
@@ -38,6 +38,10 @@ export const Timeline: React.FC = () => {
       setNewTalk(createTalk());
     } finally {
       setSubmitting(false);
+
+      if (currentTarget instanceof HTMLElement) {
+        currentTarget.focus();
+      }
     }
   };
 

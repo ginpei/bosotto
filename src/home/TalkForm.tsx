@@ -1,7 +1,7 @@
 import { Talk } from "../models/Talk";
 import "./TalkForm.scss";
 
-export type OnTalkEvent = (talk: Talk) => void;
+export type OnTalkEvent = (talk: Talk, currentTarget: EventTarget) => void;
 
 export const TalkForm: React.FC<{
   disabled: boolean;
@@ -10,15 +10,26 @@ export const TalkForm: React.FC<{
   talk: Talk;
 }> = ({ disabled, onSubmit, onTalkChange, talk }) => {
   const onBodyChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    onTalkChange({
-      ...talk,
-      body: event.currentTarget.value,
-    });
+    onTalkChange(
+      {
+        ...talk,
+        body: event.currentTarget.value,
+      },
+      event.currentTarget
+    );
+  };
+
+  const onKeyPress = (event: React.KeyboardEvent) => {
+    const isCtrlEnter =
+      event.key === "\n" && event.ctrlKey && !event.shiftKey && !event.altKey;
+    if (isCtrlEnter) {
+      onSubmit(talk, event.currentTarget);
+    }
   };
 
   const onFormSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    onSubmit(talk);
+    onSubmit(talk, event.currentTarget);
   };
 
   return (
@@ -27,6 +38,7 @@ export const TalkForm: React.FC<{
         className="TalkForm-body"
         disabled={disabled}
         onChange={onBodyChange}
+        onKeyPress={onKeyPress}
         placeholder="How's it going?"
         value={talk.body}
       ></textarea>

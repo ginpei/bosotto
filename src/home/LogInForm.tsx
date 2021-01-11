@@ -2,6 +2,7 @@ import firebase from "firebase/app";
 import { useState } from "react";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import { auth } from "../misc/firebase";
+import { isProd } from "../shared/env";
 
 const uiConfig = {
   signInFlow: "popup",
@@ -14,9 +15,6 @@ const uiConfig = {
 };
 
 export const LogInForm: React.FC = () => {
-  // TODO extract
-  const isProd = window.location.hostname !== "localhost";
-
   return (
     <div className="LogInForm">
       {isProd ? <ProdLogInForm /> : <DevLogInForm />}

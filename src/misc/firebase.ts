@@ -1,6 +1,7 @@
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
+import { isProd } from "../shared/env";
 
 export type DocumentReference<
   T = firebase.firestore.DocumentData
@@ -47,8 +48,7 @@ export function initializeFirebase(): firebase.app.App {
   db = app.firestore();
   auth = app.auth();
 
-  const inLocalDev = window.location.hostname === "localhost";
-  if (inLocalDev) {
+  if (!isProd) {
     auth.useEmulator("http://localhost:9099");
     // functions.useEmulator("localhost", 5001);
     db.useEmulator("localhost", 8080);

@@ -22,4 +22,8 @@ h1.Timeline-title {
 
 .Timeline-talkItem {
   border-bottom: 1px solid var(--moderate-bg);
+
+  &:hover {
+    background-color: var(--moderate-bg);
+  }
 }

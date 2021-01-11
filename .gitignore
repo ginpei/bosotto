@@ -23,6 +23,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Firebase
+.firebase/
 .firebase-data/
 !.firebase-data/.gitkeep
 database-debug.log

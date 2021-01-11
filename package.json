@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "react-scripts build",
+    "deploy": "firebase deploy",
     "dev": "react-scripts start",
     "eject": "react-scripts eject",
     "lint": "eslint . && tsc",

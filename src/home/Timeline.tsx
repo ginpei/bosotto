@@ -18,6 +18,10 @@ export const Timeline: React.FC = () => {
   const [talks, setTalks] = useState<Talk[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
+  const onHeaderClick = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const onNewTalkChange: OnTalkEvent = (talk) => {
     setNewTalk(talk);
   };
@@ -59,7 +63,7 @@ export const Timeline: React.FC = () => {
 
   return (
     <section className="Timeline">
-      <header className="Timeline-header">
+      <header className="Timeline-header" onClick={onHeaderClick}>
         <h1 className="Timeline-title">Timeline</h1>
       </header>
       <div className="Timeline-input">

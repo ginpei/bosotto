@@ -9,9 +9,10 @@ import {
   ssToTask,
   Task,
 } from "../models/Task";
+import { DashboardSection } from "./Dashboard";
 import { OnTaskEvent, TaskForm } from "./TaskForm";
 
-export const TaskList: React.FC = () => {
+export const DashboardTaskSection: React.FC = () => {
   const [userId, setUserId] = useState(auth.currentUser?.uid);
   const [newTask, setNewTask] = useState(createTask());
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -75,8 +76,7 @@ export const TaskList: React.FC = () => {
   }, [userId]);
 
   return (
-    <section className="TaskList">
-      <h2>Tasks</h2>
+    <DashboardSection className="DashboardTaskSection" title="Tasks">
       <TaskForm
         disabled={submitting}
         onChange={onNewTaskChange}
@@ -90,7 +90,7 @@ export const TaskList: React.FC = () => {
           </li>
         ))}
       </ul>
-    </section>
+    </DashboardSection>
   );
 };
 

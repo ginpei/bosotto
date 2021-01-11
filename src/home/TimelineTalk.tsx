@@ -1,3 +1,4 @@
+import NiceMarkdown from "@ginpei/react-nice-markdown";
 import dayjs from "dayjs";
 import { Timestamp } from "../misc/firebase";
 import { Talk } from "../models/Talk";
@@ -13,7 +14,9 @@ export const TimelineTalk: React.FC<{ talk: Talk }> = ({ talk }) => {
         <span className="TimelineTalk-name">{userName}</span>
         <span className="TimelineTalk-dateTime">{sDateTime}</span>
       </div>
-      <div className="TimelineTalk-body">{talk.body}</div>
+      <div className="TimelineTalk-body">
+        <NiceMarkdown content={talk.body} />
+      </div>
     </div>
   );
 };

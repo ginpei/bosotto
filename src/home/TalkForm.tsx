@@ -1,4 +1,5 @@
 import { Talk } from "../models/Talk";
+import "./TalkForm.scss";
 
 export type OnTalkEvent = (talk: Talk) => void;
 
@@ -22,16 +23,17 @@ export const TalkForm: React.FC<{
 
   return (
     <form className="TalkForm" onSubmit={onFormSubmit}>
-      <p>
-        <textarea
-          disabled={disabled}
-          onChange={onBodyChange}
-          value={talk.body}
-        ></textarea>
-      </p>
-      <p>
+      <textarea
+        className="TalkForm-body"
+        disabled={disabled}
+        onChange={onBodyChange}
+        placeholder="How's it going?"
+        value={talk.body}
+      ></textarea>
+      <div className="TalkForm-controls">
+        <span></span>
         <button disabled={disabled}>Post</button>
-      </p>
+      </div>
     </form>
   );
 };

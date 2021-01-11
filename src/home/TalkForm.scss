@@ -1,0 +1,17 @@
+.TalkForm {
+  display: grid;
+}
+
+textarea.TalkForm-body {
+  box-sizing: border-box;
+  border: none;
+  min-height: 5rem;
+  padding: 0.5rem;
+  resize: none;
+}
+
+.TalkForm-controls {
+  display: grid;
+  grid-template-columns: auto 30%;
+  padding: 1rem;
+}

@@ -1,0 +1,24 @@
+.Timeline {
+  border: solid 1px var(--moderate-bg);
+}
+
+.Timeline-header {
+  background-color: var(--main-bg);
+  border-bottom: 1px solid var(--moderate-bg);
+  padding: 1rem;
+  position: sticky;
+  top: 0;
+}
+
+h1.Timeline-title {
+  font-size: 1em;
+  margin: 0;
+}
+
+.Timeline-input {
+  border-bottom: 3px solid var(--moderate-bg);
+}
+
+.Timeline-talkItem {
+  border-bottom: 1px solid var(--moderate-bg);
+}

@@ -1,0 +1,5 @@
+.HomePage-frame {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: max(320px, 60%) auto;
+}

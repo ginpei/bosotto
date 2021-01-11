@@ -1,11 +1,47 @@
 import { useEffect, useState } from "react";
 import { auth } from "../misc/firebase";
 import { noop } from "../misc/misc";
-import { getUserTaskCollection, ssToTask, Task } from "../models/Task";
+import {
+  createTask,
+  getUserTaskCollection,
+  postTask,
+  ssToTask,
+  Task,
+} from "../models/Task";
+import { OnTaskEvent, TaskForm } from "./TaskForm";
 
 export const TaskList: React.FC = () => {
   const [userId, setUserId] = useState(auth.currentUser?.uid);
+  const [newTask, setNewTask] = useState(createTask());
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+
+  const onNewTaskChange: OnTaskEvent = (task) => {
+    setNewTask(task);
+  };
+
+  const onNewTaskSubmit: OnTaskEvent = async (task, elForm) => {
+    if (!userId) {
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await postTask(userId, task);
+    } finally {
+      setSubmitting(false);
+      setNewTask(createTask());
+
+      if (elForm instanceof HTMLFormElement) {
+        elForm.reset();
+
+        const elInput = elForm.querySelector("input");
+        if (elInput) {
+          elInput.focus();
+        }
+      }
+    }
+  };
 
   useEffect(() => {
     return auth.onAuthStateChanged((user) => {
@@ -30,6 +66,12 @@ export const TaskList: React.FC = () => {
   return (
     <section className="TaskList">
       <h2>Tasks</h2>
+      <TaskForm
+        disabled={submitting}
+        onChange={onNewTaskChange}
+        onSubmit={onNewTaskSubmit}
+        task={newTask}
+      />
       <ul>
         {tasks.map((task) => (
           <li key={task.id}>

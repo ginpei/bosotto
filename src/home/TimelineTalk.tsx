@@ -1,8 +1,10 @@
+import dayjs from "dayjs";
+import { Timestamp } from "../misc/firebase";
 import { Talk } from "../models/Talk";
 import "./TimelineTalk.scss";
 
 export const TimelineTalk: React.FC<{ talk: Talk }> = ({ talk }) => {
-  const sDateTime = "2020/11/11";
+  const sDateTime = getDateTimeString(talk.createdAt);
   const userName = "Alice";
 
   return (
@@ -15,3 +17,14 @@ export const TimelineTalk: React.FC<{ talk: Talk }> = ({ talk }) => {
     </div>
   );
 };
+
+function getDateTimeString(timestamp: Timestamp) {
+  const d = dayjs(timestamp.toDate());
+
+  const isToday = d.format("YYYY-MM-DD") === dayjs().format("YYYY-MM-DD");
+  if (isToday) {
+    return d.format("hh:mm A");
+  }
+
+  return d.format("YYYY-MM-DD HH:mm");
+}

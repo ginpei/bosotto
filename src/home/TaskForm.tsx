@@ -1,6 +1,6 @@
 import { Task } from "../models/Task";
 
-export type OnTaskEvent = (task: Task, currentTarget: EventTarget) => void;
+export type OnTaskEvent = (task: Task, currentTarget?: EventTarget) => void;
 
 export const TaskForm: React.FC<{
   disabled: boolean;

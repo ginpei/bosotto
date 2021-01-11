@@ -34,6 +34,14 @@ export async function postTask(userId: string, task: Task): Promise<Task> {
   };
 }
 
+export function deleteTask(task: Task): Promise<void> {
+  if (!task.id || !task.userId) {
+    throw new Error("To delete, task must exist");
+  }
+
+  return getTaskCollection().doc(task.id).delete();
+}
+
 export function getUserTaskCollection(userId: string): TaskQuery {
   return getTaskCollection().where("userId", "==", userId);
 }

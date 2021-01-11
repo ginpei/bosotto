@@ -3,6 +3,7 @@ import { auth } from "../misc/firebase";
 import { noop } from "../misc/misc";
 import {
   createTask,
+  deleteTask,
   getUserTaskCollection,
   postTask,
   ssToTask,
@@ -43,6 +44,16 @@ export const TaskList: React.FC = () => {
     }
   };
 
+  const onTaskDelete: OnTaskEvent = (task: Task) => {
+    // eslint-disable-next-line no-alert
+    const ok = window.confirm(
+      `Are you sure you want to delete this task?\n\n${task.title}`
+    );
+    if (ok) {
+      deleteTask(task);
+    }
+  };
+
   useEffect(() => {
     return auth.onAuthStateChanged((user) => {
       setUserId(user?.uid);
@@ -75,7 +86,7 @@ export const TaskList: React.FC = () => {
       <ul>
         {tasks.map((task) => (
           <li key={task.id}>
-            <TaskItem task={task} />
+            <TaskItem onDelete={onTaskDelete} task={task} />
           </li>
         ))}
       </ul>
@@ -83,6 +94,17 @@ export const TaskList: React.FC = () => {
   );
 };
 
-const TaskItem: React.FC<{ task: Task }> = ({ task }) => {
-  return <div className="TaskItem">{task.title}</div>;
+const TaskItem: React.FC<{ onDelete: OnTaskEvent; task: Task }> = ({
+  onDelete,
+  task,
+}) => {
+  const onDeleteClick = () => {
+    onDelete(task);
+  };
+
+  return (
+    <div className="TaskItem">
+      {task.title} <button onClick={onDeleteClick}>Delete</button>
+    </div>
+  );
 };

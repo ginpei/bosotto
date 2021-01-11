@@ -1,10 +1,10 @@
 .Timeline {
-  border: solid 1px var(--moderate-bg);
+  border: solid 1px var(--moderate-borderColor);
 }
 
 .Timeline-header {
   background-color: var(--main-bg);
-  border-bottom: 1px solid var(--moderate-bg);
+  border-bottom: 1px solid var(--moderate-borderColor);
   cursor: pointer;
   padding: 1rem;
   position: sticky;
@@ -17,11 +17,11 @@ h1.Timeline-title {
 }
 
 .Timeline-input {
-  border-bottom: 3px solid var(--moderate-bg);
+  border-bottom: 3px solid var(--moderate-borderColor);
 }
 
 .Timeline-talkItem {
-  border-bottom: 1px solid var(--moderate-bg);
+  border-bottom: 1px solid var(--moderate-borderColor);
 
   &:hover {
     background-color: var(--moderate-bg);

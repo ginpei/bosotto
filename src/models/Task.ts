@@ -10,6 +10,7 @@ import {
 } from "../misc/firebase";
 
 export interface Task extends DataRecord {
+  complete: boolean;
   title: string;
   userId: string;
 }
@@ -34,6 +35,11 @@ export async function postTask(userId: string, task: Task): Promise<Task> {
   };
 }
 
+export function completeTask(task: Task, complete: boolean): Promise<void> {
+  const doc = getTaskDoc(task);
+  return doc.update({ complete });
+}
+
 export function deleteTask(task: Task): Promise<void> {
   if (!task.id || !task.userId) {
     throw new Error("To delete, task must exist");
@@ -52,9 +58,19 @@ function getTaskCollection(): TaskCollectionReference {
   ) as firebase.firestore.CollectionReference<TaskData>;
 }
 
+export function getTaskDoc(task: Task): TaskReference {
+  const { id } = task;
+  if (!id) {
+    throw new Error("ID must have been set");
+  }
+
+  return getTaskCollection().doc(id);
+}
+
 export function createTask(initial?: Partial<Task>): Task {
   return {
     ...createDataRecord(),
+    complete: false,
     title: "",
     userId: "",
     ...initial,

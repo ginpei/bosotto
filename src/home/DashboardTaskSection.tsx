@@ -3,6 +3,7 @@ import { auth } from "../misc/firebase";
 import { noop } from "../misc/misc";
 import { createTalk, postTalk } from "../models/Talk";
 import {
+  completeTask,
   createTask,
   deleteTask,
   getUserTaskCollection,
@@ -46,6 +47,10 @@ export const DashboardTaskSection: React.FC = () => {
     }
   };
 
+  const onTaskComplete: OnTaskEvent = async (task: Task) => {
+    completeTask(task, true);
+  };
+
   const onTaskStart: OnTaskEvent = (task: Task) => {
     if (!userId) {
       return;
@@ -54,6 +59,10 @@ export const DashboardTaskSection: React.FC = () => {
     const body = `Started ${task.title}`;
     const talk = createTalk({ body });
     postTalk(userId, talk);
+  };
+
+  const onTaskIncomplete: OnTaskEvent = async (task: Task) => {
+    completeTask(task, false);
   };
 
   const onTaskStop: OnTaskEvent = (task: Task) => {
@@ -108,7 +117,9 @@ export const DashboardTaskSection: React.FC = () => {
         {tasks.map((task) => (
           <li key={task.id}>
             <TaskItem
+              onComplete={onTaskComplete}
               onDelete={onTaskDelete}
+              onIncomplete={onTaskIncomplete}
               onStart={onTaskStart}
               onStop={onTaskStop}
               task={task}
@@ -121,11 +132,13 @@ export const DashboardTaskSection: React.FC = () => {
 };
 
 const TaskItem: React.FC<{
+  onComplete: OnTaskEvent;
   onDelete: OnTaskEvent;
+  onIncomplete: OnTaskEvent;
   onStart: OnTaskEvent;
   onStop: OnTaskEvent;
   task: Task;
-}> = ({ onDelete, onStart, onStop, task }) => {
+}> = ({ onComplete, onDelete, onIncomplete, onStart, onStop, task }) => {
   const onStartClick = () => {
     onStart(task);
   };
@@ -134,14 +147,27 @@ const TaskItem: React.FC<{
     onStop(task);
   };
 
+  const onIncompleteClick = () => {
+    onIncomplete(task);
+  };
+
+  const onCompleteClick = () => {
+    onComplete(task);
+  };
+
   const onDeleteClick = () => {
     onDelete(task);
   };
 
   return (
     <div className="TaskItem">
-      {task.title} <button onClick={onStartClick}>Start</button>{" "}
-      <button onClick={onStopClick}>Stop</button>{" "}
+      {task.title} <button onClick={onStartClick}>Start</button>
+      <button onClick={onStopClick}>Stop</button>
+      {task.complete ? (
+        <button onClick={onIncompleteClick}>Incomplete</button>
+      ) : (
+        <button onClick={onCompleteClick}>Complete</button>
+      )}
       <button onClick={onDeleteClick}>Delete</button>
     </div>
   );

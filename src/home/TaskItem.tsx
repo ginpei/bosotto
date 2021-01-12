@@ -31,8 +31,13 @@ export const TaskItem: React.FC<{
         onChange={onCheckboxClick}
         type="checkbox"
       />
-      {task.title} <button onClick={onStartClick}>Start</button>
-      <button onClick={onStopClick}>Stop</button>
+      {task.title}{" "}
+      {!task.complete && (
+        <>
+          <button onClick={onStartClick}>Start</button>
+          <button onClick={onStopClick}>Stop</button>
+        </>
+      )}
       <button onClick={onDeleteClick}>Delete</button>
     </label>
   );

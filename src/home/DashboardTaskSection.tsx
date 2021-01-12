@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { auth } from "../misc/firebase";
 import { noop } from "../misc/misc";
+import { createTalk, postTalk } from "../models/Talk";
 import {
   createTask,
   deleteTask,
@@ -45,6 +46,26 @@ export const DashboardTaskSection: React.FC = () => {
     }
   };
 
+  const onTaskStart: OnTaskEvent = (task: Task) => {
+    if (!userId) {
+      return;
+    }
+
+    const body = `Started ${task.title}`;
+    const talk = createTalk({ body });
+    postTalk(userId, talk);
+  };
+
+  const onTaskStop: OnTaskEvent = (task: Task) => {
+    if (!userId) {
+      return;
+    }
+
+    const body = `Stopped ${task.title}`;
+    const talk = createTalk({ body });
+    postTalk(userId, talk);
+  };
+
   const onTaskDelete: OnTaskEvent = (task: Task) => {
     // eslint-disable-next-line no-alert
     const ok = window.confirm(
@@ -86,7 +107,12 @@ export const DashboardTaskSection: React.FC = () => {
       <ul>
         {tasks.map((task) => (
           <li key={task.id}>
-            <TaskItem onDelete={onTaskDelete} task={task} />
+            <TaskItem
+              onDelete={onTaskDelete}
+              onStart={onTaskStart}
+              onStop={onTaskStop}
+              task={task}
+            />
           </li>
         ))}
       </ul>
@@ -94,17 +120,29 @@ export const DashboardTaskSection: React.FC = () => {
   );
 };
 
-const TaskItem: React.FC<{ onDelete: OnTaskEvent; task: Task }> = ({
-  onDelete,
-  task,
-}) => {
+const TaskItem: React.FC<{
+  onDelete: OnTaskEvent;
+  onStart: OnTaskEvent;
+  onStop: OnTaskEvent;
+  task: Task;
+}> = ({ onDelete, onStart, onStop, task }) => {
+  const onStartClick = () => {
+    onStart(task);
+  };
+
+  const onStopClick = () => {
+    onStop(task);
+  };
+
   const onDeleteClick = () => {
     onDelete(task);
   };
 
   return (
     <div className="TaskItem">
-      {task.title} <button onClick={onDeleteClick}>Delete</button>
+      {task.title} <button onClick={onStartClick}>Start</button>{" "}
+      <button onClick={onStopClick}>Stop</button>{" "}
+      <button onClick={onDeleteClick}>Delete</button>
     </div>
   );
 };

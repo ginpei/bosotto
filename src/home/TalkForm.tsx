@@ -44,7 +44,9 @@ export const TalkForm: React.FC<{
       ></textarea>
       <div className="TalkForm-controls">
         <span></span>
-        <button disabled={disabled}>Post</button>
+        <button disabled={disabled}>
+          Post <small>(Ctrl+Enter)</small>
+        </button>
       </div>
     </form>
   );

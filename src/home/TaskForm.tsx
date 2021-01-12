@@ -1,8 +1,6 @@
-import { Task } from "../models/Task";
+import { OnTaskEvent, Task } from "../models/Task";
 import { InputField } from "../shared/pure/InputField";
 import "./TaskForm.scss";
-
-export type OnTaskEvent = (task: Task, currentTarget?: EventTarget) => void;
 
 export const TaskForm: React.FC<{
   disabled: boolean;

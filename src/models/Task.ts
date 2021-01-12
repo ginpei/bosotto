@@ -20,6 +20,8 @@ export type TaskReference = DocumentReference<TaskData>;
 export type TaskCollectionReference = CollectionReference<TaskData>;
 export type TaskQuery = Query<TaskData>;
 
+export type OnTaskEvent = (task: Task, currentTarget?: EventTarget) => void;
+
 export async function postTask(userId: string, task: Task): Promise<Task> {
   const coll = getTaskCollection();
   const doc = await coll.add({

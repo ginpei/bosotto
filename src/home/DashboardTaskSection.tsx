@@ -7,12 +7,13 @@ import {
   createTask,
   deleteTask,
   getUserTaskCollection,
+  OnTaskEvent,
   postTask,
   ssToTask,
   Task,
 } from "../models/Task";
 import { DashboardSection } from "./Dashboard";
-import { OnTaskEvent, TaskForm } from "./TaskForm";
+import { TaskForm } from "./TaskForm";
 
 export const DashboardTaskSection: React.FC = () => {
   const [userId, setUserId] = useState(auth.currentUser?.uid);

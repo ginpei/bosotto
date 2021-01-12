@@ -50,7 +50,7 @@ export const DashboardTaskSection: React.FC = () => {
   };
 
   const onTaskComplete: OnTaskEvent = async (task: Task) => {
-    completeTask(task, true);
+    completeTask(task, !task.complete);
   };
 
   const onTaskStart: OnTaskEvent = (task: Task) => {
@@ -61,10 +61,6 @@ export const DashboardTaskSection: React.FC = () => {
     const body = `Started ${task.title}`;
     const talk = createTalk({ body });
     postTalk(userId, talk);
-  };
-
-  const onTaskIncomplete: OnTaskEvent = async (task: Task) => {
-    completeTask(task, false);
   };
 
   const onTaskStop: OnTaskEvent = (task: Task) => {
@@ -119,9 +115,8 @@ export const DashboardTaskSection: React.FC = () => {
         {tasks.map((task) => (
           <li key={task.id}>
             <TaskItem
-              onComplete={onTaskComplete}
+              onCompleteToggle={onTaskComplete}
               onDelete={onTaskDelete}
-              onIncomplete={onTaskIncomplete}
               onStart={onTaskStart}
               onStop={onTaskStop}
               task={task}

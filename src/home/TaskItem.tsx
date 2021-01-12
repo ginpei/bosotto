@@ -1,13 +1,12 @@
 import { OnTaskEvent, Task } from "../models/Task";
 
 export const TaskItem: React.FC<{
-  onComplete: OnTaskEvent;
+  onCompleteToggle: OnTaskEvent;
   onDelete: OnTaskEvent;
-  onIncomplete: OnTaskEvent;
   onStart: OnTaskEvent;
   onStop: OnTaskEvent;
   task: Task;
-}> = ({ onComplete, onDelete, onIncomplete, onStart, onStop, task }) => {
+}> = ({ onCompleteToggle, onDelete, onStart, onStop, task }) => {
   const onStartClick = () => {
     onStart(task);
   };
@@ -16,12 +15,8 @@ export const TaskItem: React.FC<{
     onStop(task);
   };
 
-  const onIncompleteClick = () => {
-    onIncomplete(task);
-  };
-
-  const onCompleteClick = () => {
-    onComplete(task);
+  const onCheckboxClick = () => {
+    onCompleteToggle(task);
   };
 
   const onDeleteClick = () => {
@@ -29,15 +24,16 @@ export const TaskItem: React.FC<{
   };
 
   return (
-    <div className="TaskItem">
+    <label className="TaskItem">
+      <input
+        checked={task.complete}
+        name="complete"
+        onChange={onCheckboxClick}
+        type="checkbox"
+      />
       {task.title} <button onClick={onStartClick}>Start</button>
       <button onClick={onStopClick}>Stop</button>
-      {task.complete ? (
-        <button onClick={onIncompleteClick}>Incomplete</button>
-      ) : (
-        <button onClick={onCompleteClick}>Complete</button>
-      )}
       <button onClick={onDeleteClick}>Delete</button>
-    </div>
+    </label>
   );
 };

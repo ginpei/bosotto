@@ -1,4 +1,6 @@
 import { Task } from "../models/Task";
+import { InputField } from "../shared/pure/InputField";
+import "./TaskForm.scss";
 
 export type OnTaskEvent = (task: Task, currentTarget?: EventTarget) => void;
 
@@ -26,17 +28,17 @@ export const TaskForm: React.FC<{
 
   return (
     <form className="TaskForm" onSubmit={onFormSubmit}>
-      <label>
-        Title:{" "}
-        <input
-          disabled={disabled}
-          name="title"
-          onChange={onInputChange}
-          type="text"
-          value={task.title}
-        />
-      </label>
-      <button disabled={disabled}>Add</button>
+      <InputField
+        disabled={disabled}
+        label="Title"
+        name="title"
+        onChange={onInputChange}
+        type="text"
+        value={task.title}
+      />
+      <div style={{ textAlign: "right" }}>
+        <button disabled={disabled}>Add</button>
+      </div>
     </form>
   );
 };

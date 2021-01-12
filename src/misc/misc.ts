@@ -1,3 +1,7 @@
+import { ElementType, HTMLProps } from "react";
+
+export type HtmlComponent<T extends ElementType> = React.FC<HTMLProps<T>>;
+
 export const noop: () => void = () => undefined;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

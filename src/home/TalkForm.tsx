@@ -36,6 +36,7 @@ export const TalkForm: React.FC<{
     <form className="TalkForm" onSubmit={onFormSubmit}>
       <textarea
         className="TalkForm-body"
+        data-focus-name="talkInput"
         disabled={disabled}
         onChange={onBodyChange}
         onKeyPress={onKeyPress}

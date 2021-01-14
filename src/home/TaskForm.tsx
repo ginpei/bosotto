@@ -27,6 +27,7 @@ export const TaskForm: React.FC<{
   return (
     <form className="TaskForm" onSubmit={onFormSubmit}>
       <InputField
+        data-focus-name="taskInput"
         disabled={disabled}
         label="Title"
         name="title"

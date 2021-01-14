@@ -3,7 +3,7 @@ import { useCurrentUserId } from "../models/CurrentUser";
 import { DashboardSection } from "./Dashboard";
 import { LogInForm } from "./LogInForm";
 
-export const DashboardAccountSection: React.FC = () => {
+export const AccountSection: React.FC = () => {
   const [userId] = useCurrentUserId();
 
   const onLogOutClick = async () => {
@@ -11,7 +11,7 @@ export const DashboardAccountSection: React.FC = () => {
   };
 
   return (
-    <DashboardSection className="DashboardAccountSection" title="Account">
+    <DashboardSection className="AccountSection" title="Account">
       {userId ? (
         <p>
           <button onClick={onLogOutClick}>Log out</button>

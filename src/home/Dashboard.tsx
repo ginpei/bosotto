@@ -1,6 +1,6 @@
 import { jcn } from "../misc/misc";
+import { AccountSection } from "./AccountSection";
 import "./Dashboard.scss";
-import { DashboardAccountSection } from "./DashboardAccountSection";
 import { TaskSection } from "./TaskSection";
 
 export const Dashboard: React.FC = () => {
@@ -9,7 +9,7 @@ export const Dashboard: React.FC = () => {
       <header className="Dashboard-header ui-container">
         <h1 className="Dashboard-title">Dashboard</h1>
       </header>
-      <DashboardAccountSection />
+      <AccountSection />
       <TaskSection />
     </section>
   );

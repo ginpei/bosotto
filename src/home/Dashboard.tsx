@@ -1,7 +1,7 @@
 import { jcn } from "../misc/misc";
 import "./Dashboard.scss";
 import { DashboardAccountSection } from "./DashboardAccountSection";
-import { DashboardTaskSection } from "./DashboardTaskSection";
+import { TaskSection } from "./TaskSection";
 
 export const Dashboard: React.FC = () => {
   return (
@@ -10,7 +10,7 @@ export const Dashboard: React.FC = () => {
         <h1 className="Dashboard-title">Dashboard</h1>
       </header>
       <DashboardAccountSection />
-      <DashboardTaskSection />
+      <TaskSection />
     </section>
   );
 };

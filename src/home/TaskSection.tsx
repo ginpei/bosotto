@@ -16,7 +16,7 @@ import { DashboardSection } from "./Dashboard";
 import { TaskForm } from "./TaskForm";
 import { TaskItem } from "./TaskItem";
 
-export const DashboardTaskSection: React.FC = () => {
+export const TaskSection: React.FC = () => {
   const [userId, setUserId] = useState(auth.currentUser?.uid);
   const [newTask, setNewTask] = useState(createTask());
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -104,7 +104,7 @@ export const DashboardTaskSection: React.FC = () => {
   }, [userId]);
 
   return (
-    <DashboardSection className="DashboardTaskSection" title="Tasks">
+    <DashboardSection className="TaskSection" title="Tasks">
       <TaskForm
         disabled={submitting}
         onChange={onNewTaskChange}

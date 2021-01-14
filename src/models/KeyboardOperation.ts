@@ -46,6 +46,10 @@ export function useKeyboardShortcuts(on: boolean): void {
     return () => document.removeEventListener("keydown", onKeyDown);
 
     function onKeyDown(event: KeyboardEvent) {
+      if (event.isComposing) {
+        return;
+      }
+
       const shortcut = matchKeyboardShortcut(shortcuts, focus, event.code);
       if (!shortcut) {
         return;

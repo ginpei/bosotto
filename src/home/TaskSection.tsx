@@ -100,7 +100,7 @@ export const TaskSection: React.FC = () => {
   return (
     <DashboardSection className="TaskSection" title="Tasks">
       <TaskForm
-        disabled={submitting}
+        disabled={Boolean(!userId || submitting)}
         onChange={onNewTaskChange}
         onSubmit={onNewTaskSubmit}
         task={newTask}

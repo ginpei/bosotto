@@ -67,7 +67,7 @@ export const Timeline: React.FC = () => {
       </header>
       <div className="Timeline-input">
         <TalkForm
-          disabled={submitting}
+          disabled={Boolean(!userId || submitting)}
           onSubmit={onNewTalkSubmit}
           onTalkChange={onNewTalkChange}
           talk={newTalk}

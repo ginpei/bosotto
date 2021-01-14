@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { auth } from "../misc/firebase";
 import { noop } from "../misc/misc";
+import { useCurrentUserId } from "../models/CurrentUser";
 import { createTalk, postTalk } from "../models/Talk";
 import {
   completeTask,
@@ -17,7 +17,7 @@ import { TaskForm } from "./TaskForm";
 import { TaskItem } from "./TaskItem";
 
 export const TaskSection: React.FC = () => {
-  const [userId, setUserId] = useState(auth.currentUser?.uid);
+  const [userId] = useCurrentUserId();
   const [newTask, setNewTask] = useState(createTask());
   const [tasks, setTasks] = useState<Task[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -82,12 +82,6 @@ export const TaskSection: React.FC = () => {
       deleteTask(task);
     }
   };
-
-  useEffect(() => {
-    return auth.onAuthStateChanged((user) => {
-      setUserId(user?.uid);
-    });
-  }, []);
 
   useEffect(() => {
     if (!userId) {

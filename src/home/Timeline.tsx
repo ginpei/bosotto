@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { auth } from "../misc/firebase";
 import { noop } from "../misc/misc";
+import { useCurrentUserId } from "../models/CurrentUser";
 import {
   createTalk,
   getUserTalkCollection,
@@ -13,7 +14,7 @@ import "./Timeline.scss";
 import { TimelineTalk } from "./TimelineTalk";
 
 export const Timeline: React.FC = () => {
-  const [userId, setUserId] = useState(auth.currentUser?.uid);
+  const [userId] = useCurrentUserId();
   const [newTalk, setNewTalk] = useState(createTalk());
   const [talks, setTalks] = useState<Talk[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -44,12 +45,6 @@ export const Timeline: React.FC = () => {
       }
     }
   };
-
-  useEffect(() => {
-    return auth.onAuthStateChanged((user) => {
-      setUserId(user?.uid);
-    });
-  }, []);
 
   useEffect(() => {
     if (!userId) {

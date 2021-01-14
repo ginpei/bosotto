@@ -29,11 +29,17 @@ export const ProdLogInForm: React.FC = () => {
 const DevLogInForm: React.FC = () => {
   const [email, setEmail] = useState("test@example.com");
   const [password, setPassword] = useState("123456");
+  const [error, setError] = useState<Error | null>(null);
 
   const onInputSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    await auth.signInWithEmailAndPassword(email, password);
+    try {
+      setError(null);
+      await auth.signInWithEmailAndPassword(email, password);
+    } catch (err) {
+      setError(err);
+    }
   };
 
   const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,6 +80,7 @@ const DevLogInForm: React.FC = () => {
           value={password}
         />
       </label>
+      {error && <p className="ui-errorAlert">{error.message}</p>}
       <p>
         <button>Log in</button>
       </p>

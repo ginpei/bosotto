@@ -14,7 +14,7 @@ import "./Timeline.scss";
 import { TimelineTalk } from "./TimelineTalk";
 
 export const Timeline: React.FC = () => {
-  const [userId] = useCurrentUserId();
+  const userId = useCurrentUserId();
   const [newTalk, setNewTalk] = useState(createTalk());
   const [talks, setTalks] = useState<Talk[]>([]);
   const [submitting, setSubmitting] = useState(false);

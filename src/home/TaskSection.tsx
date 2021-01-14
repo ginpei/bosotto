@@ -17,7 +17,7 @@ import { TaskForm } from "./TaskForm";
 import { TaskItem } from "./TaskItem";
 
 export const TaskSection: React.FC = () => {
-  const [userId] = useCurrentUserId();
+  const userId = useCurrentUserId();
   const [newTask, setNewTask] = useState(createTask());
   const [tasks, setTasks] = useState<Task[]>([]);
   const [submitting, setSubmitting] = useState(false);

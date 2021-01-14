@@ -4,7 +4,7 @@ import { DashboardSection } from "./Dashboard";
 import { LogInForm } from "./LogInForm";
 
 export const AccountSection: React.FC = () => {
-  const [userId] = useCurrentUserId();
+  const userId = useCurrentUserId();
 
   return (
     <DashboardSection className="AccountSection" title="Account">

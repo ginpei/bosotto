@@ -6,19 +6,21 @@ import { LogInForm } from "./LogInForm";
 export const AccountSection: React.FC = () => {
   const [userId] = useCurrentUserId();
 
+  return (
+    <DashboardSection className="AccountSection" title="Account">
+      {userId ? <LogOutForm /> : <LogInForm />}
+    </DashboardSection>
+  );
+};
+
+const LogOutForm: React.FC = () => {
   const onLogOutClick = async () => {
     await auth.signOut();
   };
 
   return (
-    <DashboardSection className="AccountSection" title="Account">
-      {userId ? (
-        <p>
-          <button onClick={onLogOutClick}>Log out</button>
-        </p>
-      ) : (
-        <LogInForm />
-      )}
-    </DashboardSection>
+    <div className="LogOutForm">
+      <button onClick={onLogOutClick}>Log out</button>
+    </div>
   );
 };

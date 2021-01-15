@@ -1,5 +1,4 @@
 import { OnTaskEvent, Task } from "../models/Task";
-import { InputField } from "../shared/pure/InputField";
 import "./TaskForm.scss";
 
 export const TaskForm: React.FC<{

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { noop } from "../misc/misc";
+import { FocusMan } from "./Focus";
 
 export interface KeyboardShortcut {
   command: string;
@@ -91,37 +92,15 @@ function useFocusWatcher(
   root = document
 ): void {
   useEffect(() => {
-    root.addEventListener("pointerdown", onPointerDown);
-    return () => root.removeEventListener("pointerdown", onPointerDown);
-
-    function onPointerDown(event: PointerEvent) {
-      const { target } = event;
-      if (!(target instanceof HTMLElement)) {
-        setFocus("");
-        return;
-      }
-
-      const elFocus = target.closest("[data-focus-name]");
-      const name = elFocus?.getAttribute("data-focus-name");
-      setFocus(name || "");
-    }
-  }, [setFocus, root]);
-
-  useEffect(() => {
-    root.addEventListener("focusin", onFocus);
-    return () => root.removeEventListener("focusin", onFocus);
-
-    function onFocus(event: FocusEvent) {
-      const { target } = event;
-      if (!(target instanceof HTMLElement)) {
-        setFocus("");
-        return;
-      }
-
-      const elFocus = target.closest("[data-focus-name]");
-      const name = elFocus?.getAttribute("data-focus-name");
-      setFocus(name || "");
-    }
+    const man = new FocusMan(
+      [
+        (focus) => {
+          setFocus(focus);
+        },
+      ],
+      root
+    );
+    return man.start();
   }, [setFocus, root]);
 }
 

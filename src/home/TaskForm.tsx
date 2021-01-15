@@ -26,18 +26,16 @@ export const TaskForm: React.FC<{
 
   return (
     <form className="TaskForm" onSubmit={onFormSubmit}>
-      <InputField
+      <input
         data-focus-name="taskInput"
         disabled={disabled}
-        label="Title"
         name="title"
         onChange={onInputChange}
+        placeholder="Something to do"
         type="text"
         value={task.title}
       />
-      <div style={{ textAlign: "right" }}>
-        <button disabled={disabled}>Add</button>
-      </div>
+      <button disabled={disabled}>Add</button>
     </form>
   );
 };

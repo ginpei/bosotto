@@ -21,6 +21,11 @@ export const TaskSection: React.FC = () => {
   const [newTask, setNewTask] = useState(createTask());
   const [tasks, setTasks] = useState<Task[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [hidingComplete, setFilteringComplete] = useState(false);
+
+  const availableTasks = hidingComplete
+    ? tasks.filter((v) => !v.complete)
+    : tasks;
 
   const onNewTaskChange: OnTaskEvent = (task) => {
     setNewTask(task);
@@ -47,6 +52,12 @@ export const TaskSection: React.FC = () => {
         }
       }
     }
+  };
+
+  const onHidingCompleteChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFilteringComplete(event.currentTarget.checked);
   };
 
   const onTaskComplete: OnTaskEvent = async (task: Task) => {
@@ -105,8 +116,19 @@ export const TaskSection: React.FC = () => {
         onSubmit={onNewTaskSubmit}
         task={newTask}
       />
+      <p>
+        <label>
+          <input
+            checked={hidingComplete}
+            name="hidingComplete"
+            onChange={onHidingCompleteChange}
+            type="checkbox"
+          />{" "}
+          Hide complete
+        </label>
+      </p>
       <ul>
-        {tasks.map((task) => (
+        {availableTasks.map((task) => (
           <li key={task.id}>
             <TaskItem
               onCompleteToggle={onTaskComplete}

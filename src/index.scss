@@ -7,6 +7,8 @@
   --theme-bg: #036;
   --theme-fg: #fff;
   --list-start-indent: 2em;
+  --main-animation-duration: 300ms;
+  --transition-animation-duration: 100ms;
 }
 
 body {
@@ -41,4 +43,14 @@ code {
   background-color: #fff9f9;
   color: tomato;
   padding: 0.5rem;
+}
+
+// Firebase Authentication
+.firebase-emulator-warning {
+  opacity: 0.1;
+  transition: opacity var(--transition-animation-duration);
+
+  &:hover {
+    opacity: 1;
+  }
 }

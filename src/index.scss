@@ -1,4 +1,6 @@
 :root {
+  --list-start-indent: 2em;
+  --main-animation-duration: 300ms;
   --main-bg: #fff;
   --main-fg: #333;
   --moderate-bg: #f9f9f9;
@@ -6,8 +8,6 @@
   --moderate-fg: #999;
   --theme-bg: #036;
   --theme-fg: #fff;
-  --list-start-indent: 2em;
-  --main-animation-duration: 300ms;
   --transition-animation-duration: 100ms;
 }
 

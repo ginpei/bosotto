@@ -4,6 +4,7 @@
 module.exports = {
   extends: ["react-app", "./node_modules/@ginpei/eslintrc/.eslintrc.js"],
   rules: {
-    // your rules here
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": "error",
   },
 };

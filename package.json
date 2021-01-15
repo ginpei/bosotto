@@ -7,7 +7,7 @@
     "deploy": "firebase deploy",
     "dev": "react-scripts start",
     "eject": "react-scripts eject",
-    "lint": "eslint . && tsc",
+    "lint": "eslint src && tsc",
     "start": "firebase emulators:exec 'npm run dev' --ui --import .firebase-data --export-on-exit",
     "test": "react-scripts test"
   },

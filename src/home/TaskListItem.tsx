@@ -28,7 +28,7 @@ export const TaskListItem: React.FC<{
   };
 
   return (
-    <li className="TaskListItem">
+    <li className="TaskListItem" data-complete={task.complete}>
       <label>
         <span className="TaskListItem-checkboxWrapper">
           <input

@@ -1,6 +1,11 @@
 .TaskListItem {
   list-style: none;
   text-indent: calc(-1 * var(--list-start-indent));
+
+  &[data-complete="true"] {
+    color: var(--moderate-fg);
+    text-decoration: line-through;
+  }
 }
 
 .TaskListItem-checkboxWrapper {

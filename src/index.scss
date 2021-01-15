@@ -6,6 +6,7 @@
   --moderate-fg: #999;
   --theme-bg: #036;
   --theme-fg: #fff;
+  --list-start-indent: 2em;
 }
 
 body {
@@ -16,6 +17,10 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: var(--main-fg);
+}
+
+ul {
+  padding-inline-start: var(--list-start-indent);
 }
 
 code {

@@ -15,6 +15,7 @@ import {
 import { DashboardSection } from "./Dashboard";
 import { TaskForm } from "./TaskForm";
 import { TaskItem } from "./TaskItem";
+import "./TaskSection.scss";
 
 export const TaskSection: React.FC = () => {
   const userId = useCurrentUserId();
@@ -127,17 +128,16 @@ export const TaskSection: React.FC = () => {
           Hide complete
         </label>
       </p>
-      <ul>
+      <ul className="TaskSection-taskList">
         {availableTasks.map((task) => (
-          <li key={task.id}>
-            <TaskItem
-              onCompleteToggle={onTaskComplete}
-              onDelete={onTaskDelete}
-              onStart={onTaskStart}
-              onStop={onTaskStop}
-              task={task}
-            />
-          </li>
+          <TaskItem
+            key={task.id}
+            onCompleteToggle={onTaskComplete}
+            onDelete={onTaskDelete}
+            onStart={onTaskStart}
+            onStop={onTaskStop}
+            task={task}
+          />
         ))}
       </ul>
     </DashboardSection>

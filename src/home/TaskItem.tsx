@@ -1,4 +1,5 @@
 import { OnTaskEvent, Task } from "../models/Task";
+import "./TaskItem.scss";
 
 export const TaskItem: React.FC<{
   onCompleteToggle: OnTaskEvent;
@@ -24,21 +25,25 @@ export const TaskItem: React.FC<{
   };
 
   return (
-    <label className="TaskItem">
-      <input
-        checked={task.complete}
-        name="complete"
-        onChange={onCheckboxClick}
-        type="checkbox"
-      />
-      {task.title}{" "}
-      {!task.complete && (
-        <>
-          <button onClick={onStartClick}>Start</button>
-          <button onClick={onStopClick}>Stop</button>
-        </>
-      )}
-      <button onClick={onDeleteClick}>Delete</button>
-    </label>
+    <li className="TaskItem">
+      <label>
+        <span className="TaskItem-checkboxWrapper">
+          <input
+            checked={task.complete}
+            name="complete"
+            onChange={onCheckboxClick}
+            type="checkbox"
+          />
+        </span>
+        {task.title}{" "}
+        {!task.complete && (
+          <>
+            <button onClick={onStartClick}>Start</button>
+            <button onClick={onStopClick}>Stop</button>
+          </>
+        )}
+        <button onClick={onDeleteClick}>Delete</button>
+      </label>
+    </li>
   );
 };

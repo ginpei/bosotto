@@ -1,7 +1,10 @@
 import { OnTaskEvent, Task } from "../models/Task";
-import "./TaskItem.scss";
+import "./TaskListItem.scss";
 
-export const TaskItem: React.FC<{
+/**
+ * Extends `<li>`
+ */
+export const TaskListItem: React.FC<{
   onCompleteToggle: OnTaskEvent;
   onDelete: OnTaskEvent;
   onStart: OnTaskEvent;
@@ -25,9 +28,9 @@ export const TaskItem: React.FC<{
   };
 
   return (
-    <li className="TaskItem">
+    <li className="TaskListItem">
       <label>
-        <span className="TaskItem-checkboxWrapper">
+        <span className="TaskListItem-checkboxWrapper">
           <input
             checked={task.complete}
             name="complete"

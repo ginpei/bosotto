@@ -1,9 +1,9 @@
-.TaskItem {
+.TaskListItem {
   list-style: none;
   text-indent: calc(-1 * var(--list-start-indent));
 }
 
-.TaskItem-checkboxWrapper {
+.TaskListItem-checkboxWrapper {
   display: inline-block;
   text-indent: 0;
   width: var(--list-start-indent);

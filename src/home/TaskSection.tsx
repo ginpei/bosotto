@@ -14,7 +14,7 @@ import {
 } from "../models/Task";
 import { DashboardSection } from "./Dashboard";
 import { TaskForm } from "./TaskForm";
-import { TaskItem } from "./TaskItem";
+import { TaskListItem } from "./TaskListItem";
 import "./TaskSection.scss";
 
 export const TaskSection: React.FC = () => {
@@ -130,7 +130,7 @@ export const TaskSection: React.FC = () => {
       </p>
       <ul className="TaskSection-taskList">
         {availableTasks.map((task) => (
-          <TaskItem
+          <TaskListItem
             key={task.id}
             onCompleteToggle={onTaskComplete}
             onDelete={onTaskDelete}

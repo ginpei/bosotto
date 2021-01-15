@@ -37,6 +37,7 @@ export function useKeyboardShortcuts(on: boolean): void {
   const [focus, setFocus] = useState<KeyboardShortcut["where"]>("");
   useFocusWatcher(setFocus);
 
+  // handle keyboard shortcuts
   useEffect(() => {
     if (!on) {
       return noop;
@@ -60,6 +61,18 @@ export function useKeyboardShortcuts(on: boolean): void {
       executeKeyboardShortcut(shortcut, setFocus);
     }
   }, [on, focus]);
+
+  // handle focus UI
+  // TODO separate focus and shortcuts more better
+  useEffect(() => {
+    const elLastFocus = document.querySelector("[data-focus-current='true']");
+    elLastFocus?.removeAttribute("data-focus-current");
+
+    const elFocus = document.querySelector(`[data-focus-name="${focus}"]`);
+    if (elFocus) {
+      elFocus.setAttribute("data-focus-current", "true");
+    }
+  }, [focus]);
 }
 
 export function creatKeyboardShortcut(

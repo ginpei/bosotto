@@ -53,18 +53,22 @@ export class FocusMan {
     }
 
     const elFocus = target.closest(SEL_FOCUS_NAME);
-    const name = elFocus?.getAttribute(ATTR_FOCUS_NAME) ?? "";
+    const name = this.getFocusNameOn(elFocus);
     this.focus = name;
   }
 
   private pickCurrentFocus() {
     const el = this.root.querySelector(SEL_FOCUS_NAME);
-    const focus = el?.getAttribute(ATTR_FOCUS_NAME) ?? "";
+    const focus = this.getFocusNameOn(el);
     this.focusValue = focus;
   }
 
   private emitFocusChange() {
     this.onFocusChange.forEach((v) => v(this.focusValue));
+  }
+
+  private getFocusNameOn(el: Element | null) {
+    return el?.getAttribute(ATTR_FOCUS_NAME) ?? "";
   }
 }
 

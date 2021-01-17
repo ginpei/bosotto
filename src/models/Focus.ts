@@ -35,7 +35,7 @@ export class FocusMan {
 
   onPointerDown(event: PointerEvent): void {
     const { target } = event;
-    if (!(target instanceof HTMLElement)) {
+    if (!(target instanceof Element)) {
       this.focus = "";
       return;
     }
@@ -47,7 +47,7 @@ export class FocusMan {
 
   onFocusIn(event: FocusEvent): void {
     const { target } = event;
-    if (!(target instanceof HTMLElement)) {
+    if (!(target instanceof Element)) {
       this.focus = "";
       return;
     }

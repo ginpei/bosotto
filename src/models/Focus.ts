@@ -53,8 +53,8 @@ export class FocusMan {
     }
 
     const elFocus = target.closest(SEL_FOCUS_NAME);
-    const name = elFocus?.getAttribute(ATTR_FOCUS_NAME);
-    this.focus = name || "";
+    const name = elFocus?.getAttribute(ATTR_FOCUS_NAME) ?? "";
+    this.focus = name;
   }
 
   private pickCurrentFocus() {

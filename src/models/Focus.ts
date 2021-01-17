@@ -40,9 +40,9 @@ export class FocusMan {
       return;
     }
 
-    const elFocus = target.closest("[data-focus-name]");
-    const name = elFocus?.getAttribute("data-focus-name");
-    this.focus = name || "";
+    const elFocus = target.closest(SEL_FOCUS_NAME);
+    const name = this.getFocusNameOn(elFocus);
+    this.focus = name;
   }
 
   onFocusIn(event: FocusEvent): void {
@@ -59,8 +59,8 @@ export class FocusMan {
 
   private pickCurrentFocus() {
     const el = this.root.querySelector(SEL_FOCUS_NAME);
-    const focus = this.getFocusNameOn(el);
-    this.focusValue = focus;
+    const name = this.getFocusNameOn(el);
+    this.focusValue = name;
   }
 
   private emitFocusChange() {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { noop } from "../misc/misc";
+import { defaultShortcuts } from "./defaultShortcuts";
 import { FocusMan } from "./Focus";
 
 export interface KeyboardShortcut {
@@ -7,32 +8,6 @@ export interface KeyboardShortcut {
   key: string;
   where: string;
 }
-
-const shortcuts: KeyboardShortcut[] = [
-  creatKeyboardShortcut({
-    command: "focusRoot",
-    key: "Escape",
-    where: "talkInput",
-  }),
-
-  creatKeyboardShortcut({
-    command: "focusRoot",
-    key: "Escape",
-    where: "taskInput",
-  }),
-
-  creatKeyboardShortcut({
-    command: "focusTalkInput",
-    key: "KeyN",
-    where: "",
-  }),
-
-  creatKeyboardShortcut({
-    command: "focusTaskInput",
-    key: "KeyT",
-    where: "",
-  }),
-];
 
 export function useKeyboardShortcuts(on: boolean): void {
   const [focusMan] = useState(new FocusMan());
@@ -52,7 +27,7 @@ export function useKeyboardShortcuts(on: boolean): void {
       }
 
       const shortcut = matchKeyboardShortcut(
-        shortcuts,
+        defaultShortcuts,
         focusMan.focus,
         event.code
       );

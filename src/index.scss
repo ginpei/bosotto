@@ -1,0 +1,58 @@
+@import "./models/KeyboardOperation.scss";
+
+:root {
+  --list-start-indent: 2em;
+  --main-animation-duration: 300ms;
+  --main-bg: #fff;
+  --main-fg: #333;
+  --moderate-bg: #f9f9f9;
+  --moderate-borderColor: #ddd;
+  --moderate-fg: #999;
+  --theme-bg: #036;
+  --theme-fg: #fff;
+  --transition-animation-duration: 100ms;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--main-fg);
+}
+
+ul {
+  padding-inline-start: var(--list-start-indent);
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.ui-container {
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  width: min(800px, 100%);
+}
+
+.ui-errorAlert {
+  background-color: #fff9f9;
+  color: tomato;
+  padding: 0.5rem;
+}
+
+// Firebase Authentication
+.firebase-emulator-warning {
+  opacity: 0.1;
+  transition: opacity var(--transition-animation-duration);
+
+  &:hover {
+    opacity: 1;
+  }
+}

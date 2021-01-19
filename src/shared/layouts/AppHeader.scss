@@ -1,0 +1,13 @@
+.AppHeader {
+  background-color: var(--theme-bg);
+  color: var(--theme-fg);
+
+  a {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

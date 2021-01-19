@@ -1,0 +1,24 @@
+.Dashboard {
+  border: solid 1px var(--moderate-borderColor);
+  max-height: calc(100vh - 2px - 2rem);
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: sticky;
+  top: 1rem;
+}
+
+.Dashboard-header {
+  background-color: var(--main-bg);
+  border-block-end: solid 1px var(--moderate-borderColor);
+  border-block-start: solid 0.01px transparent;
+  position: sticky;
+  top: 0;
+}
+
+.Dashboard-title {
+  font-size: 1em;
+}
+
+.Dashboard-DashboardSection-title {
+  font-size: 1em;
+}

@@ -1,0 +1,25 @@
+.TimelineTalk {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.TimelineTalk-header {
+  display: flex;
+  gap: 1rem;
+  line-height: 1em;
+}
+
+.TimelineTalk-name {
+  font-weight: bold;
+}
+
+.TimelineTalk-dateTime {
+  color: var(--moderate-fg);
+  font-size: 0.8em;
+}
+
+.TimelineTalk-body {
+  overflow: auto;
+  word-wrap: break-word;
+}

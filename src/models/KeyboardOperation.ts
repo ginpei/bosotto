@@ -35,8 +35,7 @@ const shortcuts: KeyboardShortcut[] = [
 ];
 
 export function useKeyboardShortcuts(on: boolean): void {
-  const [focus, setFocus] = useState<KeyboardShortcut["where"]>("");
-  useFocusWatcher(setFocus);
+  const [focusMan] = useState(new FocusMan());
 
   // handle keyboard shortcuts
   useEffect(() => {
@@ -52,28 +51,24 @@ export function useKeyboardShortcuts(on: boolean): void {
         return;
       }
 
-      const shortcut = matchKeyboardShortcut(shortcuts, focus, event.code);
+      const shortcut = matchKeyboardShortcut(
+        shortcuts,
+        focusMan.focus,
+        event.code
+      );
       if (!shortcut) {
         return;
       }
 
       event.preventDefault();
 
-      executeKeyboardShortcut(shortcut, setFocus);
+      executeKeyboardShortcut(shortcut, focusMan);
     }
-  }, [on, focus]);
+  }, [on, focusMan]);
 
-  // handle focus UI
-  // TODO separate focus and shortcuts more better
   useEffect(() => {
-    const elLastFocus = document.querySelector("[data-focus-current='true']");
-    elLastFocus?.removeAttribute("data-focus-current");
-
-    const elFocus = document.querySelector(`[data-focus-name="${focus}"]`);
-    if (elFocus) {
-      elFocus.setAttribute("data-focus-current", "true");
-    }
-  }, [focus]);
+    focusMan.start();
+  }, [focusMan]);
 }
 
 export function creatKeyboardShortcut(
@@ -85,23 +80,6 @@ export function creatKeyboardShortcut(
     where: "",
     ...initial,
   };
-}
-
-function useFocusWatcher(
-  setFocus: (focus: string) => void,
-  root = document
-): void {
-  useEffect(() => {
-    const man = new FocusMan(
-      [
-        (focus) => {
-          setFocus(focus);
-        },
-      ],
-      root
-    );
-    return man.start();
-  }, [setFocus, root]);
 }
 
 function matchKeyboardShortcut(
@@ -118,30 +96,21 @@ function matchKeyboardShortcut(
 
 function executeKeyboardShortcut(
   shortcut: KeyboardShortcut,
-  setFocus: (focus: string) => void
+  focusMan: FocusMan
 ) {
   const { command } = shortcut;
   if (command === "focusTalkInput") {
-    const el = document.querySelector(
-      "[data-focus-name='talkInput']"
-    ) as HTMLElement;
-    el.focus();
-    setFocus("talkInput");
+    focusMan.setFocus("talkInput");
     return;
   }
 
   if (command === "focusTaskInput") {
-    const el = document.querySelector(
-      "[data-focus-name='taskInput']"
-    ) as HTMLElement;
-    el.focus();
-    setFocus("taskInput");
+    focusMan.setFocus("taskInput");
     return;
   }
 
   if (command === "focusRoot") {
-    (document.activeElement as HTMLElement)?.blur();
-    setFocus("");
+    focusMan.setFocus("");
     return;
   }
 

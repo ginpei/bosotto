@@ -11,10 +11,10 @@ export const HomePage: React.FC = () => {
     <div className="HomePage">
       <AppHeader />
       <div className="HomePage-frame ui-container">
-        <div className="HomePage-timeline" data-focus-name="timeline">
+        <div className="HomePage-timeline">
           <Timeline />
         </div>
-        <div className="HomePage-dashboard" data-focus-name="dashboard">
+        <div className="HomePage-dashboard">
           <Dashboard />
         </div>
       </div>

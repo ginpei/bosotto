@@ -61,7 +61,7 @@ export const Timeline: React.FC = () => {
   }, [userId]);
 
   return (
-    <section className="Timeline">
+    <section className="Timeline" data-focus-name="timeline">
       <header className="Timeline-header" onClick={onHeaderClick}>
         <h1 className="Timeline-title">Timeline</h1>
       </header>

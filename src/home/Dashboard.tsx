@@ -5,7 +5,7 @@ import { TaskSection } from "./TaskSection";
 
 export const Dashboard: React.FC = () => {
   return (
-    <section className="Dashboard">
+    <section className="Dashboard" data-focus-name="dashboard">
       <header className="Dashboard-header ui-container">
         <h1 className="Dashboard-title">Dashboard</h1>
       </header>

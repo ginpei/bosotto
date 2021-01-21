@@ -15,7 +15,7 @@ import {
 } from "../models/Task";
 import { DashboardSection } from "./Dashboard";
 import { TaskForm } from "./TaskForm";
-import { TaskListItem } from "./TaskListItem";
+import { TaskArchivedListItem, TaskListItem } from "./TaskListItem";
 import "./TaskSection.scss";
 
 export const TaskSection: React.FC = () => {
@@ -23,11 +23,7 @@ export const TaskSection: React.FC = () => {
   const [newTask, setNewTask] = useState(createTask());
   const [tasks, setTasks] = useState<Task[]>([]);
   const [submitting, setSubmitting] = useState(false);
-  const [hidingComplete, setFilteringComplete] = useState(false);
-
-  const availableTasks = hidingComplete
-    ? tasks.filter((v) => !v.complete)
-    : tasks;
+  const [showingArchived, setShowingArchived] = useState(false);
 
   const onNewTaskChange: OnTaskEvent = (task) => {
     setNewTask(task);
@@ -56,14 +52,12 @@ export const TaskSection: React.FC = () => {
     }
   };
 
-  const onHidingCompleteChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setFilteringComplete(event.currentTarget.checked);
+  const onShowArchivedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setShowingArchived(event.currentTarget.checked);
   };
 
   const onArchiveCompletesClick = () => {
-    archiveTasks(tasks.filter((v) => v.complete));
+    archiveTasks(tasks.filter((v) => !v.archived && v.complete));
   };
 
   const onTaskComplete: OnTaskEvent = async (task: Task) => {
@@ -106,14 +100,15 @@ export const TaskSection: React.FC = () => {
       return noop;
     }
 
-    return getUserTaskCollection(userId)
-      .where("archived", "==", false)
-      .orderBy("createdAt", "desc")
-      .onSnapshot((ss) => {
-        const list = ss.docs.map((v) => ssToTask(v));
-        setTasks(list);
-      });
-  }, [userId]);
+    const coll = getUserTaskCollection(userId);
+    const coll2 = showingArchived
+      ? coll.orderBy("archived")
+      : coll.where("archived", "==", false);
+    return coll2.orderBy("createdAt", "desc").onSnapshot((ss) => {
+      const list = ss.docs.map((v) => ssToTask(v));
+      setTasks(list);
+    });
+  }, [userId, showingArchived]);
 
   return (
     <DashboardSection className="TaskSection" title="Tasks">
@@ -126,26 +121,30 @@ export const TaskSection: React.FC = () => {
       <p>
         <label>
           <input
-            checked={hidingComplete}
-            name="hidingComplete"
-            onChange={onHidingCompleteChange}
+            checked={showingArchived}
+            name="showingArchived"
+            onChange={onShowArchivedChange}
             type="checkbox"
           />{" "}
-          Hide complete
+          Show archived
         </label>
         <button onClick={onArchiveCompletesClick}>Archive all completes</button>
       </p>
       <ul className="TaskSection-taskList">
-        {availableTasks.map((task) => (
-          <TaskListItem
-            key={task.id}
-            onCompleteToggle={onTaskComplete}
-            onDelete={onTaskDelete}
-            onStart={onTaskStart}
-            onStop={onTaskStop}
-            task={task}
-          />
-        ))}
+        {tasks.map((task) =>
+          task.archived ? (
+            <TaskArchivedListItem task={task} />
+          ) : (
+            <TaskListItem
+              key={task.id}
+              onCompleteToggle={onTaskComplete}
+              onDelete={onTaskDelete}
+              onStart={onTaskStart}
+              onStop={onTaskStop}
+              task={task}
+            />
+          )
+        )}
       </ul>
     </DashboardSection>
   );

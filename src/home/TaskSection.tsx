@@ -3,6 +3,7 @@ import { noop } from "../misc/misc";
 import { useCurrentUserId } from "../models/CurrentUser";
 import { createTalk, postTalk } from "../models/Talk";
 import {
+  archiveTasks,
   completeTask,
   createTask,
   deleteTask,
@@ -61,6 +62,10 @@ export const TaskSection: React.FC = () => {
     setFilteringComplete(event.currentTarget.checked);
   };
 
+  const onArchiveCompletesClick = () => {
+    archiveTasks(tasks.filter((v) => v.complete));
+  };
+
   const onTaskComplete: OnTaskEvent = async (task: Task) => {
     completeTask(task, !task.complete);
   };
@@ -102,6 +107,7 @@ export const TaskSection: React.FC = () => {
     }
 
     return getUserTaskCollection(userId)
+      .where("archived", "==", false)
       .orderBy("createdAt", "desc")
       .onSnapshot((ss) => {
         const list = ss.docs.map((v) => ssToTask(v));
@@ -127,6 +133,7 @@ export const TaskSection: React.FC = () => {
           />{" "}
           Hide complete
         </label>
+        <button onClick={onArchiveCompletesClick}>Archive all completes</button>
       </p>
       <ul className="TaskSection-taskList">
         {availableTasks.map((task) => (

@@ -10,6 +10,7 @@ import {
 } from "../misc/firebase";
 
 export interface Task extends DataRecord {
+  archived: boolean;
   complete: boolean;
   title: string;
   userId: string;
@@ -35,6 +36,18 @@ export async function postTask(userId: string, task: Task): Promise<Task> {
     id: doc.id,
     userId,
   };
+}
+
+export async function archiveTasks(tasks: Task[]): Promise<void> {
+  const batch = db.batch();
+
+  const data: Partial<Task> = { archived: true };
+  tasks.forEach((task) => {
+    const doc = getTaskDoc(task);
+    batch.update(doc, data);
+  });
+
+  return batch.commit();
 }
 
 export function completeTask(task: Task, complete: boolean): Promise<void> {
@@ -72,6 +85,7 @@ export function getTaskDoc(task: Task): TaskReference {
 export function createTask(initial?: Partial<Task>): Task {
   return {
     ...createDataRecord(),
+    archived: false,
     complete: false,
     title: "",
     userId: "",

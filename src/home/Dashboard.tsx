@@ -38,11 +38,13 @@ type DispatchProps = ReturnType<typeof mapDispatch>;
 
 const CounterSection: React.FC<StateProps & DispatchProps> = ({
   count,
+  focus,
   decrement,
   increment,
 }) => {
   return (
     <DashboardSection className="MyApp ui-container" title="Counter">
+      <p>Focus: "{focus}"</p>
       <p>{count}</p>
       <p>
         <button onClick={increment}>+1</button>
@@ -54,6 +56,7 @@ const CounterSection: React.FC<StateProps & DispatchProps> = ({
 
 const mapState = (state: AppState) => ({
   count: state.count,
+  focus: state.focus,
 });
 
 const mapDispatch = (dispatch: Dispatch<{ type: string }>) => ({

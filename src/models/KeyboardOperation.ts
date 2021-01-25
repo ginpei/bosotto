@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { noop } from "../misc/misc";
-import { defaultShortcuts } from "./defaultShortcuts";
-import { FocusMan } from "./Focus";
+import { EnhancedStore } from "@reduxjs/toolkit";
+import { useCallback } from "react";
+import { appSlice, AppState } from "./appReducer";
+import { useKeyDown } from "./domEvents";
+import { useFocus } from "./Focus";
 
 export interface KeyboardShortcut {
   command: string;
@@ -9,41 +10,32 @@ export interface KeyboardShortcut {
   where: string;
 }
 
-export function useKeyboardShortcuts(on: boolean): void {
-  const [focusMan] = useState(new FocusMan());
+export function useKeyboardShortcuts(
+  store: EnhancedStore<AppState>,
+  shortcuts: KeyboardShortcut[]
+): void {
+  useFocus(store);
 
-  // handle keyboard shortcuts
-  useEffect(() => {
-    if (!on) {
-      return noop;
-    }
-
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-
-    function onKeyDown(event: KeyboardEvent) {
+  const callback = useCallback(
+    (event: KeyboardEvent): void => {
       if (event.isComposing) {
         return;
       }
 
-      const shortcut = matchKeyboardShortcut(
-        defaultShortcuts,
-        focusMan.focus,
-        event.code
-      );
+      const { focus } = store.getState();
+      const shortcut = matchKeyboardShortcut(shortcuts, focus, event.code);
       if (!shortcut) {
         return;
       }
 
       event.preventDefault();
 
-      executeKeyboardShortcut(shortcut, focusMan);
-    }
-  }, [on, focusMan]);
+      executeKeyboardShortcut(store, shortcut);
+    },
+    [store, shortcuts]
+  );
 
-  useEffect(() => {
-    focusMan.start();
-  }, [focusMan]);
+  useKeyDown(callback);
 }
 
 export function creatKeyboardShortcut(
@@ -70,22 +62,22 @@ function matchKeyboardShortcut(
 }
 
 function executeKeyboardShortcut(
-  shortcut: KeyboardShortcut,
-  focusMan: FocusMan
+  store: EnhancedStore<AppState>,
+  shortcut: KeyboardShortcut
 ) {
   const { command } = shortcut;
   if (command === "focusTalkInput") {
-    focusMan.setFocus("talkInput");
+    store.dispatch(appSlice.actions.setFocus({ focus: "talkInput" }));
     return;
   }
 
   if (command === "focusTaskInput") {
-    focusMan.setFocus("taskInput");
+    store.dispatch(appSlice.actions.setFocus({ focus: "taskInput" }));
     return;
   }
 
   if (command === "focusRoot") {
-    focusMan.setFocus("");
+    store.dispatch(appSlice.actions.setFocus({ focus: "" }));
     return;
   }
 

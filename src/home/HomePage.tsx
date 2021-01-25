@@ -1,11 +1,20 @@
+import { connect } from "react-redux";
+import { AppState, appStore } from "../models/appReducer";
+import { defaultShortcuts } from "../models/defaultShortcuts";
+import { useCurrentFocusAttr } from "../models/Focus";
 import { useKeyboardShortcuts } from "../models/KeyboardOperation";
 import { AppHeader } from "../shared/layouts/AppHeader";
 import { Dashboard } from "./Dashboard";
 import "./HomePage.scss";
 import { Timeline } from "./Timeline";
 
-export const HomePage: React.FC = () => {
-  useKeyboardShortcuts(true);
+const mapState = (state: AppState) => ({
+  focus: state.focus,
+});
+
+const HomePageInner: React.FC<ReturnType<typeof mapState>> = ({ focus }) => {
+  useKeyboardShortcuts(appStore, defaultShortcuts);
+  useCurrentFocusAttr(focus);
 
   return (
     <div className="HomePage">
@@ -21,3 +30,5 @@ export const HomePage: React.FC = () => {
     </div>
   );
 };
+
+export const HomePage = connect(mapState)(HomePageInner);

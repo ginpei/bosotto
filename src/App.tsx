@@ -1,12 +1,10 @@
 import { Provider } from "react-redux";
 import { AppRouter } from "./misc/AppRouter";
-import { useAppStore } from "./models/appReducer";
+import { appStore } from "./models/appReducer";
 
 export const App: React.FC = () => {
-  const store = useAppStore();
-
   return (
-    <Provider store={store}>
+    <Provider store={appStore}>
       <AppRouter />
     </Provider>
   );

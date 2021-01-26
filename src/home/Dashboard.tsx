@@ -15,6 +15,9 @@ export const Dashboard: React.FC = () => {
   );
 };
 
+/**
+ * A section in dashboard.
+ */
 export const DashboardSection: React.FC<{
   className?: string;
   title: string;

@@ -19,3 +19,9 @@ export function modelToDataRecord<T extends DataRecord>(
   const { id, createdAt, ...data } = model;
   return { ...data, createdAt: new firebase.firestore.Timestamp(createdAt, 0) };
 }
+
+export function isDocumentData<T extends DataRecord>(
+  model: Partial<T> | ToDocumentData<T> | undefined
+): model is ToDocumentData<T> {
+  return model?.createdAt instanceof firebase.firestore.Timestamp;
+}

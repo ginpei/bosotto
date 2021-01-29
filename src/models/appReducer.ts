@@ -1,4 +1,5 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
+import { Task } from "./Task";
 
 export type AppState = ReturnType<ReturnType<typeof createAppSlice>["reducer"]>;
 export type AppActions = ReturnType<typeof createAppSlice>["actions"];
@@ -13,6 +14,7 @@ function createAppSlice() {
     initialState: {
       count: 0,
       focus: "",
+      userTasks: [] as Task[],
     },
     reducers: {
       decrease: (v) => ({ ...v, count: v.count - 1 }),
@@ -20,6 +22,10 @@ function createAppSlice() {
       setFocus: (state, action: { payload: { focus: string } }) => ({
         ...state,
         focus: action.payload.focus,
+      }),
+      setUserTasks: (state, action: { payload: { userTasks: Task[] } }) => ({
+        ...state,
+        userTasks: action.payload.userTasks,
       }),
     },
   });

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { connect } from "react-redux";
 import { noop } from "../misc/misc";
+import { AppState } from "../models/appReducer";
 import { useCurrentUserId } from "../models/CurrentUser";
 import { createTalk, postTalk } from "../models/Talk";
 import {
@@ -18,7 +20,13 @@ import { TaskForm } from "./TaskForm";
 import { TaskArchivedListItem, TaskListItem } from "./TaskListItem";
 import "./TaskSection.scss";
 
-export const TaskSection: React.FC = () => {
+const mapState = (state: AppState) => ({
+  userTasks: state.userTasks,
+});
+
+const TaskSectionInner: React.FC<ReturnType<typeof mapState>> = ({
+  userTasks,
+}) => {
   const userId = useCurrentUserId();
   const [newTask, setNewTask] = useState(createTask());
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -131,6 +139,25 @@ export const TaskSection: React.FC = () => {
         <button onClick={onArchiveCompletesClick}>Archive all completes</button>
       </p>
       <ul className="TaskSection-taskList">
+        {/* TODO filter by archived */}
+        {userTasks.map((task) =>
+          task.archived ? (
+            <TaskArchivedListItem task={task} />
+          ) : (
+            <TaskListItem
+              key={task.id}
+              onCompleteToggle={onTaskComplete}
+              onDelete={onTaskDelete}
+              onStart={onTaskStart}
+              onStop={onTaskStop}
+              task={task}
+            />
+          )
+        )}
+      </ul>
+      <hr />
+      {/* TODO replace with userTasks */}
+      <ul className="TaskSection-taskList">
         {tasks.map((task) =>
           task.archived ? (
             <TaskArchivedListItem task={task} />
@@ -149,3 +176,5 @@ export const TaskSection: React.FC = () => {
     </DashboardSection>
   );
 };
+
+export const TaskSection = connect(mapState)(TaskSectionInner);

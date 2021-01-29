@@ -7,7 +7,12 @@ import {
   Query,
   Timestamp,
 } from "../misc/firebase";
-import { DataRecord, modelToDataRecord, ToDocumentData } from "./DataRecord";
+import {
+  DataRecord,
+  isDocumentData,
+  modelToDataRecord,
+  ToDocumentData,
+} from "./DataRecord";
 
 export interface Task extends DataRecord {
   archived: boolean;
@@ -82,7 +87,17 @@ export function getTaskDoc(task: Task): TaskReference {
   return getTaskCollection().doc(id);
 }
 
-export function createTask(initial?: Partial<Task>): Task {
+export function createTask(
+  initial?: Partial<Task> | ToDocumentData<Task>
+): Task {
+  if (isDocumentData(initial)) {
+    const { createdAt, ...data } = initial;
+    return createTask({
+      createdAt: createdAt.toMillis(),
+      ...data,
+    });
+  }
+
   return {
     ...createDataRecord(),
     archived: false,
@@ -97,7 +112,9 @@ export function taskToData(task: Task): TaskData {
   return modelToDataRecord(task);
 }
 
-export function ssToTask(ss: firebase.firestore.QueryDocumentSnapshot): Task {
+export function ssToTask(
+  ss: firebase.firestore.QueryDocumentSnapshot<ToDocumentData<Task>>
+): Task {
   if (!ss.exists) {
     return createTask({ title: "No longer exist" });
   }

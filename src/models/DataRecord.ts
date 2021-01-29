@@ -1,3 +1,4 @@
+import firebase from "firebase";
 import { Timestamp } from "../misc/firebase";
 
 /**
@@ -26,11 +27,11 @@ export function modelToDocumentData<T extends DataRecord>(
   model: T
 ): DocumentData<T> {
   const { id, createdAt, ...data } = model;
-  return { ...data, createdAt: new Timestamp(createdAt, 0) };
+  return { ...data, createdAt: new firebase.firestore.Timestamp(createdAt, 0) };
 }
 
 export function isDocumentData<T extends DataRecord>(
   model: Partial<T> | DocumentData<T> | undefined
 ): model is DocumentData<T> {
-  return model?.createdAt instanceof Timestamp;
+  return model?.createdAt instanceof firebase.firestore.Timestamp;
 }

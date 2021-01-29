@@ -5,10 +5,7 @@ export interface DataRecord {
   id: string;
 }
 
-export type ToDocumentData<T extends DataRecord> = Omit<
-  T,
-  "id" | "createdAt"
-> & {
+export type DocumentData<T extends DataRecord> = Omit<T, "id" | "createdAt"> & {
   createdAt: Timestamp;
 };
 
@@ -21,13 +18,13 @@ export function createDataRecord(initial?: Partial<DataRecord>): DataRecord {
 
 export function modelToDocumentData<T extends DataRecord>(
   model: T
-): ToDocumentData<T> {
+): DocumentData<T> {
   const { id, createdAt, ...data } = model;
   return { ...data, createdAt: new Timestamp(createdAt, 0) };
 }
 
 export function isDocumentData<T extends DataRecord>(
-  model: Partial<T> | ToDocumentData<T> | undefined
-): model is ToDocumentData<T> {
+  model: Partial<T> | DocumentData<T> | undefined
+): model is DocumentData<T> {
   return model?.createdAt instanceof Timestamp;
 }

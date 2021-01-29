@@ -9,8 +9,8 @@ import {
 import {
   createDataRecord,
   DataRecord,
+  DocumentData,
   modelToDocumentData,
-  ToDocumentData,
 } from "./DataRecord";
 
 export interface Talk extends DataRecord {
@@ -18,7 +18,7 @@ export interface Talk extends DataRecord {
   userId: string;
 }
 
-export type TalkData = ToDocumentData<Talk>;
+export type TalkData = DocumentData<Talk>;
 export type TalkReference = DocumentReference<TalkData>;
 export type TalkCollectionReference = CollectionReference<TalkData>;
 export type TalkQuery = Query<TalkData>;

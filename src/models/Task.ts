@@ -9,9 +9,9 @@ import {
 import {
   createDataRecord,
   DataRecord,
+  DocumentData,
   isDocumentData,
   modelToDocumentData,
-  ToDocumentData,
 } from "./DataRecord";
 
 export interface Task extends DataRecord {
@@ -21,7 +21,7 @@ export interface Task extends DataRecord {
   userId: string;
 }
 
-export type TaskData = ToDocumentData<Task>;
+export type TaskData = DocumentData<Task>;
 export type TaskReference = DocumentReference<TaskData>;
 export type TaskCollectionReference = CollectionReference<TaskData>;
 export type TaskQuery = Query<TaskData>;
@@ -87,9 +87,7 @@ export function getTaskDoc(task: Task): TaskReference {
   return getTaskCollection().doc(id);
 }
 
-export function createTask(
-  initial?: Partial<Task> | ToDocumentData<Task>
-): Task {
+export function createTask(initial?: Partial<Task> | DocumentData<Task>): Task {
   if (isDocumentData(initial)) {
     const { createdAt, ...data } = initial;
     return createTask({
@@ -112,7 +110,7 @@ export function taskToData(task: Task): TaskData {
 }
 
 export function ssToTask(
-  ss: firebase.firestore.QueryDocumentSnapshot<ToDocumentData<Task>>
+  ss: firebase.firestore.QueryDocumentSnapshot<DocumentData<Task>>
 ): Task {
   if (!ss.exists) {
     return createTask({ title: "No longer exist" });

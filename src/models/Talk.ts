@@ -5,8 +5,10 @@ import {
   DataRecord,
   db,
   DocumentReference,
+  modelToDataRecord,
   Query,
   Timestamp,
+  ToDataRecord,
 } from "../misc/firebase";
 
 export interface Talk extends DataRecord {
@@ -14,7 +16,7 @@ export interface Talk extends DataRecord {
   userId: string;
 }
 
-export type TalkData = Omit<Talk, "id">;
+export type TalkData = ToDataRecord<Talk>;
 export type TalkReference = DocumentReference<TalkData>;
 export type TalkCollectionReference = CollectionReference<TalkData>;
 export type TalkQuery = Query<TalkData>;
@@ -54,8 +56,7 @@ export function createTalk(initial?: Partial<Talk>): Talk {
 }
 
 export function talkToData(talk: Talk): TalkData {
-  const { id, ...data } = talk;
-  return data;
+  return modelToDataRecord(talk);
 }
 
 export function ssToTalk(ss: firebase.firestore.QueryDocumentSnapshot): Talk {

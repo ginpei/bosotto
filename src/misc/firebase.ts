@@ -16,8 +16,20 @@ export type Query<
 > = firebase.firestore.Query<T>;
 
 export interface DataRecord {
-  createdAt: Timestamp;
+  createdAt: number;
   id: string;
+}
+
+export type ToDataRecord<T extends DataRecord> = Omit<T, "id" | "createdAt"> & {
+  createdAt: Timestamp;
+};
+
+// TODO extract
+export function modelToDataRecord<T extends DataRecord>(
+  model: T
+): ToDataRecord<T> {
+  const { id, createdAt, ...data } = model;
+  return { ...data, createdAt: new firebase.firestore.Timestamp(createdAt, 0) };
 }
 
 export class Timestamp extends firebase.firestore.Timestamp {}
@@ -59,7 +71,7 @@ export function initializeFirebase(): firebase.app.App {
 
 export function createDataRecord(initial?: Partial<DataRecord>): DataRecord {
   return {
-    createdAt: zeroTimestamp,
+    createdAt: 0,
     id: "",
     ...initial,
   };

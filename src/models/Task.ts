@@ -5,8 +5,10 @@ import {
   DataRecord,
   db,
   DocumentReference,
+  modelToDataRecord,
   Query,
   Timestamp,
+  ToDataRecord,
 } from "../misc/firebase";
 
 export interface Task extends DataRecord {
@@ -16,7 +18,7 @@ export interface Task extends DataRecord {
   userId: string;
 }
 
-export type TaskData = Omit<Task, "id">;
+export type TaskData = ToDataRecord<Task>;
 export type TaskReference = DocumentReference<TaskData>;
 export type TaskCollectionReference = CollectionReference<TaskData>;
 export type TaskQuery = Query<TaskData>;
@@ -94,8 +96,7 @@ export function createTask(initial?: Partial<Task>): Task {
 }
 
 export function taskToData(task: Task): TaskData {
-  const { id, ...data } = task;
-  return data;
+  return modelToDataRecord(task);
 }
 
 export function ssToTask(ss: firebase.firestore.QueryDocumentSnapshot): Task {

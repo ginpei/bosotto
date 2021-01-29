@@ -99,12 +99,11 @@ export function createTask(
   }
 
   return {
-    ...createDataRecord(),
-    archived: false,
-    complete: false,
-    title: "",
-    userId: "",
-    ...initial,
+    ...createDataRecord(initial),
+    archived: initial?.archived || false,
+    complete: initial?.complete || false,
+    title: initial?.title || "",
+    userId: initial?.userId || "",
   };
 }
 

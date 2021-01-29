@@ -50,10 +50,9 @@ function getTalkCollection(): TalkCollectionReference {
 
 export function createTalk(initial?: Partial<Talk>): Talk {
   return {
-    ...createDataRecord(),
-    body: "",
-    userId: "",
-    ...initial,
+    ...createDataRecord(initial),
+    body: initial?.body || "",
+    userId: initial?.userId || "",
   };
 }
 

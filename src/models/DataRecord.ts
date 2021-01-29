@@ -15,9 +15,8 @@ export type ToDocumentData<T extends DataRecord> = Omit<
 
 export function createDataRecord(initial?: Partial<DataRecord>): DataRecord {
   return {
-    createdAt: 0,
-    id: "",
-    ...initial,
+    createdAt: initial?.createdAt || 0,
+    id: initial?.id || "",
   };
 }
 

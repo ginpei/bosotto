@@ -1,13 +1,13 @@
 import firebase from "firebase/app";
 import {
   CollectionReference,
-  createDataRecord,
   db,
   DocumentReference,
   Query,
   Timestamp,
 } from "../misc/firebase";
 import {
+  createDataRecord,
   DataRecord,
   isDocumentData,
   modelToDataRecord,

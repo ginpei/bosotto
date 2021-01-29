@@ -13,6 +13,14 @@ export type ToDocumentData<T extends DataRecord> = Omit<
   createdAt: Timestamp;
 };
 
+export function createDataRecord(initial?: Partial<DataRecord>): DataRecord {
+  return {
+    createdAt: 0,
+    id: "",
+    ...initial,
+  };
+}
+
 export function modelToDataRecord<T extends DataRecord>(
   model: T
 ): ToDocumentData<T> {

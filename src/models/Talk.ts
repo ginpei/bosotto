@@ -1,13 +1,17 @@
 import firebase from "firebase/app";
 import {
   CollectionReference,
-  createDataRecord,
   db,
   DocumentReference,
   Query,
   Timestamp,
 } from "../misc/firebase";
-import { DataRecord, modelToDataRecord, ToDocumentData } from "./DataRecord";
+import {
+  createDataRecord,
+  DataRecord,
+  modelToDataRecord,
+  ToDocumentData,
+} from "./DataRecord";
 
 export interface Talk extends DataRecord {
   body: string;

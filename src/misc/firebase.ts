@@ -52,11 +52,3 @@ export function initializeFirebase(): firebase.app.App {
 
   return app;
 }
-
-export function createDataRecord(initial?: Partial<DataRecord>): DataRecord {
-  return {
-    createdAt: 0,
-    id: "",
-    ...initial,
-  };
-}

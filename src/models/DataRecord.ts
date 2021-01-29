@@ -6,13 +6,16 @@ export interface DataRecord {
   id: string;
 }
 
-export type ToDataRecord<T extends DataRecord> = Omit<T, "id" | "createdAt"> & {
+export type ToDocumentData<T extends DataRecord> = Omit<
+  T,
+  "id" | "createdAt"
+> & {
   createdAt: Timestamp;
 };
 
 export function modelToDataRecord<T extends DataRecord>(
   model: T
-): ToDataRecord<T> {
+): ToDocumentData<T> {
   const { id, createdAt, ...data } = model;
   return { ...data, createdAt: new firebase.firestore.Timestamp(createdAt, 0) };
 }

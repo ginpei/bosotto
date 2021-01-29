@@ -7,7 +7,7 @@ import {
   Query,
   Timestamp,
 } from "../misc/firebase";
-import { DataRecord, modelToDataRecord, ToDataRecord } from "./DataRecord";
+import { DataRecord, modelToDataRecord, ToDocumentData } from "./DataRecord";
 
 export interface Task extends DataRecord {
   archived: boolean;
@@ -16,7 +16,7 @@ export interface Task extends DataRecord {
   userId: string;
 }
 
-export type TaskData = ToDataRecord<Task>;
+export type TaskData = ToDocumentData<Task>;
 export type TaskReference = DocumentReference<TaskData>;
 export type TaskCollectionReference = CollectionReference<TaskData>;
 export type TaskQuery = Query<TaskData>;

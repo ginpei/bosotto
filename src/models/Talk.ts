@@ -7,14 +7,14 @@ import {
   Query,
   Timestamp,
 } from "../misc/firebase";
-import { DataRecord, modelToDataRecord, ToDataRecord } from "./DataRecord";
+import { DataRecord, modelToDataRecord, ToDocumentData } from "./DataRecord";
 
 export interface Talk extends DataRecord {
   body: string;
   userId: string;
 }
 
-export type TalkData = ToDataRecord<Talk>;
+export type TalkData = ToDocumentData<Talk>;
 export type TalkReference = DocumentReference<TalkData>;
 export type TalkCollectionReference = CollectionReference<TalkData>;
 export type TalkQuery = Query<TalkData>;

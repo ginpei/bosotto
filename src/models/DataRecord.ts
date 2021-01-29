@@ -1,10 +1,16 @@
 import { Timestamp } from "../misc/firebase";
 
+/**
+ * Data on Redux.
+ */
 export interface DataRecord {
   createdAt: number;
   id: string;
 }
 
+/**
+ * Data on Firebase Firestore.
+ */
 export type DocumentData<T extends DataRecord> = Omit<T, "id" | "createdAt"> & {
   createdAt: Timestamp;
 };

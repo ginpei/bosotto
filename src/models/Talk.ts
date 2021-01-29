@@ -9,7 +9,7 @@ import {
 import {
   createDataRecord,
   DataRecord,
-  modelToDataRecord,
+  modelToDocumentData,
   ToDocumentData,
 } from "./DataRecord";
 
@@ -57,7 +57,7 @@ export function createTalk(initial?: Partial<Talk>): Talk {
 }
 
 export function talkToData(talk: Talk): TalkData {
-  return modelToDataRecord(talk);
+  return modelToDocumentData(talk);
 }
 
 export function ssToTalk(ss: firebase.firestore.QueryDocumentSnapshot): Talk {

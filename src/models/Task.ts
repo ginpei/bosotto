@@ -10,7 +10,7 @@ import {
   createDataRecord,
   DataRecord,
   isDocumentData,
-  modelToDataRecord,
+  modelToDocumentData,
   ToDocumentData,
 } from "./DataRecord";
 
@@ -108,7 +108,7 @@ export function createTask(
 }
 
 export function taskToData(task: Task): TaskData {
-  return modelToDataRecord(task);
+  return modelToDocumentData(task);
 }
 
 export function ssToTask(

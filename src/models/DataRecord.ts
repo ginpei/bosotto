@@ -19,7 +19,7 @@ export function createDataRecord(initial?: Partial<DataRecord>): DataRecord {
   };
 }
 
-export function modelToDataRecord<T extends DataRecord>(
+export function modelToDocumentData<T extends DataRecord>(
   model: T
 ): ToDocumentData<T> {
   const { id, createdAt, ...data } = model;

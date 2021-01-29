@@ -1,6 +1,7 @@
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
+import { DataRecord } from "../models/DataRecord";
 import { isProd } from "../shared/env";
 
 export type DocumentReference<
@@ -14,23 +15,6 @@ export type CollectionReference<
 export type Query<
   T = firebase.firestore.DocumentData
 > = firebase.firestore.Query<T>;
-
-export interface DataRecord {
-  createdAt: number;
-  id: string;
-}
-
-export type ToDataRecord<T extends DataRecord> = Omit<T, "id" | "createdAt"> & {
-  createdAt: Timestamp;
-};
-
-// TODO extract
-export function modelToDataRecord<T extends DataRecord>(
-  model: T
-): ToDataRecord<T> {
-  const { id, createdAt, ...data } = model;
-  return { ...data, createdAt: new firebase.firestore.Timestamp(createdAt, 0) };
-}
 
 export class Timestamp extends firebase.firestore.Timestamp {}
 

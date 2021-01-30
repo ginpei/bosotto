@@ -14,6 +14,7 @@ function createAppSlice() {
     initialState: {
       count: 0,
       focus: "",
+      showingArchivedTasks: false,
       userTasks: [] as Task[],
     },
     reducers: {
@@ -22,6 +23,13 @@ function createAppSlice() {
       setFocus: (state, action: { payload: { focus: string } }) => ({
         ...state,
         focus: action.payload.focus,
+      }),
+      setShowingArchivedTasks: (
+        state,
+        action: { payload: { show: boolean } }
+      ) => ({
+        ...state,
+        showingArchivedTasks: action.payload.show,
       }),
       setUserTasks: (state, action: { payload: { userTasks: Task[] } }) => ({
         ...state,

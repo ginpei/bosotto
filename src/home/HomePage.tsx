@@ -15,6 +15,7 @@ import { Timeline } from "./Timeline";
 
 const mapState = (state: AppState) => ({
   focus: state.focus,
+  showingArchivedTasks: state.showingArchivedTasks,
 });
 
 const mapDispatch = (dispatch: Dispatch) => ({
@@ -24,7 +25,7 @@ const mapDispatch = (dispatch: Dispatch) => ({
 
 const HomePageInner: React.FC<
   ReturnType<typeof mapState> & ReturnType<typeof mapDispatch>
-> = ({ focus, setUserTasks }) => {
+> = ({ focus, setUserTasks, showingArchivedTasks }) => {
   useKeyboardShortcuts(appStore, defaultShortcuts);
   useCurrentFocusAttr(focus);
   const userId = useCurrentUserId();
@@ -34,12 +35,17 @@ const HomePageInner: React.FC<
       return noop;
     }
 
-    const query = getUserTaskCollection(userId);
+    const baseQuery = getUserTaskCollection(userId);
+    const filteredQuery = showingArchivedTasks
+      ? baseQuery.orderBy("archived")
+      : baseQuery.where("archived", "==", false);
+    const query = filteredQuery.orderBy("createdAt", "desc");
+
     return query.onSnapshot((ss) => {
       const userTasks = ss.docs.map((v) => ssToTask(v));
       setUserTasks(userTasks);
     });
-  }, [userId, setUserTasks]);
+  }, [userId, setUserTasks, showingArchivedTasks]);
 
   return (
     <div className="HomePage">

@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { connect } from "react-redux";
-import { noop } from "../misc/misc";
-import { AppState } from "../models/appReducer";
+import { Dispatch } from "redux";
+import { appSlice, AppState } from "../models/appReducer";
 import { useCurrentUserId } from "../models/CurrentUser";
 import { createTalk, postTalk } from "../models/Talk";
 import {
@@ -9,10 +9,8 @@ import {
   completeTask,
   createTask,
   deleteTask,
-  getUserTaskCollection,
   OnTaskEvent,
   postTask,
-  ssToTask,
   Task,
 } from "../models/Task";
 import { DashboardSection } from "./Dashboard";
@@ -22,16 +20,20 @@ import "./TaskSection.scss";
 
 const mapState = (state: AppState) => ({
   userTasks: state.userTasks,
+  showingArchivedTasks: state.showingArchivedTasks,
 });
 
-const TaskSectionInner: React.FC<ReturnType<typeof mapState>> = ({
-  userTasks,
-}) => {
+const mapDispatch = (dispatch: Dispatch) => ({
+  setShowingArchivedTasks: (show: boolean) =>
+    dispatch(appSlice.actions.setShowingArchivedTasks({ show })),
+});
+
+const TaskSectionInner: React.FC<
+  ReturnType<typeof mapState> & ReturnType<typeof mapDispatch>
+> = ({ setShowingArchivedTasks, showingArchivedTasks, userTasks }) => {
   const userId = useCurrentUserId();
   const [newTask, setNewTask] = useState(createTask());
-  const [tasks, setTasks] = useState<Task[]>([]);
   const [submitting, setSubmitting] = useState(false);
-  const [showingArchived, setShowingArchived] = useState(false);
 
   const onNewTaskChange: OnTaskEvent = (task) => {
     setNewTask(task);
@@ -61,11 +63,11 @@ const TaskSectionInner: React.FC<ReturnType<typeof mapState>> = ({
   };
 
   const onShowArchivedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setShowingArchived(event.currentTarget.checked);
+    setShowingArchivedTasks(event.currentTarget.checked);
   };
 
   const onArchiveCompletesClick = () => {
-    archiveTasks(tasks.filter((v) => !v.archived && v.complete));
+    archiveTasks(userTasks.filter((v) => !v.archived && v.complete));
   };
 
   const onTaskComplete: OnTaskEvent = async (task: Task) => {
@@ -102,22 +104,6 @@ const TaskSectionInner: React.FC<ReturnType<typeof mapState>> = ({
     }
   };
 
-  useEffect(() => {
-    if (!userId) {
-      setTasks([]);
-      return noop;
-    }
-
-    const coll = getUserTaskCollection(userId);
-    const coll2 = showingArchived
-      ? coll.orderBy("archived")
-      : coll.where("archived", "==", false);
-    return coll2.orderBy("createdAt", "desc").onSnapshot((ss) => {
-      const list = ss.docs.map((v) => ssToTask(v));
-      setTasks(list);
-    });
-  }, [userId, showingArchived]);
-
   return (
     <DashboardSection className="TaskSection" title="Tasks">
       <TaskForm
@@ -129,7 +115,7 @@ const TaskSectionInner: React.FC<ReturnType<typeof mapState>> = ({
       <p>
         <label>
           <input
-            checked={showingArchived}
+            checked={showingArchivedTasks}
             name="showingArchived"
             onChange={onShowArchivedChange}
             type="checkbox"
@@ -155,26 +141,8 @@ const TaskSectionInner: React.FC<ReturnType<typeof mapState>> = ({
           )
         )}
       </ul>
-      <hr />
-      {/* TODO replace with userTasks */}
-      <ul className="TaskSection-taskList">
-        {tasks.map((task) =>
-          task.archived ? (
-            <TaskArchivedListItem task={task} />
-          ) : (
-            <TaskListItem
-              key={task.id}
-              onCompleteToggle={onTaskComplete}
-              onDelete={onTaskDelete}
-              onStart={onTaskStart}
-              onStop={onTaskStop}
-              task={task}
-            />
-          )
-        )}
-      </ul>
     </DashboardSection>
   );
 };
 
-export const TaskSection = connect(mapState)(TaskSectionInner);
+export const TaskSection = connect(mapState, mapDispatch)(TaskSectionInner);

@@ -1,7 +1,6 @@
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
-import { DataRecord } from "../models/DataRecord";
 import { isProd } from "../shared/env";
 
 export type DocumentReference<

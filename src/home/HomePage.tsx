@@ -29,23 +29,7 @@ const HomePageInner: React.FC<
   useKeyboardShortcuts(appStore, defaultShortcuts);
   useCurrentFocusAttr(focus);
   const userId = useCurrentUserId();
-
-  useEffect(() => {
-    if (!userId) {
-      return noop;
-    }
-
-    const baseQuery = getUserTaskCollection(userId);
-    const filteredQuery = showingArchivedTasks
-      ? baseQuery.orderBy("archived")
-      : baseQuery.where("archived", "==", false);
-    const query = filteredQuery.orderBy("createdAt", "desc");
-
-    return query.onSnapshot((ss) => {
-      const userTasks = ss.docs.map((v) => ssToTask(v));
-      setUserTasks(userTasks);
-    });
-  }, [userId, setUserTasks, showingArchivedTasks]);
+  useUserTaskConnection(userId, showingArchivedTasks, setUserTasks);
 
   return (
     <div className="HomePage">
@@ -63,3 +47,28 @@ const HomePageInner: React.FC<
 };
 
 export const HomePage = connect(mapState, mapDispatch)(HomePageInner);
+
+function useUserTaskConnection(
+  userId: string,
+  showingArchivedTasks: boolean,
+  setUserTasks: (
+    userTasks: Task[]
+  ) => { payload: { userTasks: Task[] }; type: string }
+) {
+  useEffect(() => {
+    if (!userId) {
+      return noop;
+    }
+
+    const baseQuery = getUserTaskCollection(userId);
+    const filteredQuery = showingArchivedTasks
+      ? baseQuery.orderBy("archived")
+      : baseQuery.where("archived", "==", false);
+    const query = filteredQuery.orderBy("createdAt", "desc");
+
+    return query.onSnapshot((ss) => {
+      const userTasks = ss.docs.map((v) => ssToTask(v));
+      setUserTasks(userTasks);
+    });
+  }, [userId, setUserTasks, showingArchivedTasks]);
+}

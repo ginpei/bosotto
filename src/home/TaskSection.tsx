@@ -128,7 +128,7 @@ const TaskSectionInner: React.FC<
         {/* TODO filter by archived */}
         {userTasks.map((task) =>
           task.archived ? (
-            <TaskArchivedListItem task={task} />
+            <TaskArchivedListItem key={task.id} task={task} />
           ) : (
             <TaskListItem
               key={task.id}

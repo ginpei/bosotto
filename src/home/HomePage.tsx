@@ -37,7 +37,6 @@ const HomePageInner: React.FC<
     const query = getUserTaskCollection(userId);
     return query.onSnapshot((ss) => {
       const userTasks = ss.docs.map((v) => ssToTask(v));
-      console.log("# userTasks", userTasks);
       setUserTasks(userTasks);
     });
   }, [userId, setUserTasks]);

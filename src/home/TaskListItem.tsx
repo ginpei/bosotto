@@ -50,3 +50,19 @@ export const TaskListItem: React.FC<{
     </li>
   );
 };
+
+export const TaskArchivedListItem: React.FC<{ task: Task }> = ({ task }) => {
+  return (
+    <li className="TaskListItem" data-complete={task.complete}>
+      <span className="TaskListItem-checkboxWrapper">
+        <input
+          checked={task.complete}
+          disabled={true}
+          name="complete"
+          type="checkbox"
+        />
+      </span>
+      {task.title}
+    </li>
+  );
+};

@@ -1,20 +1,24 @@
 import firebase from "firebase/app";
 import {
   CollectionReference,
-  createDataRecord,
-  DataRecord,
   db,
   DocumentReference,
   Query,
   Timestamp,
 } from "../misc/firebase";
+import {
+  createDataRecord,
+  DataRecord,
+  DocumentData,
+  modelToDocumentData,
+} from "./DataRecord";
 
 export interface Talk extends DataRecord {
   body: string;
   userId: string;
 }
 
-export type TalkData = Omit<Talk, "id">;
+export type TalkData = DocumentData<Talk>;
 export type TalkReference = DocumentReference<TalkData>;
 export type TalkCollectionReference = CollectionReference<TalkData>;
 export type TalkQuery = Query<TalkData>;
@@ -46,16 +50,14 @@ function getTalkCollection(): TalkCollectionReference {
 
 export function createTalk(initial?: Partial<Talk>): Talk {
   return {
-    ...createDataRecord(),
-    body: "",
-    userId: "",
-    ...initial,
+    ...createDataRecord(initial),
+    body: initial?.body || "",
+    userId: initial?.userId || "",
   };
 }
 
 export function talkToData(talk: Talk): TalkData {
-  const { id, ...data } = talk;
-  return data;
+  return modelToDocumentData(talk);
 }
 
 export function ssToTalk(ss: firebase.firestore.QueryDocumentSnapshot): Talk {

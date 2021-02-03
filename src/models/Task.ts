@@ -1,21 +1,27 @@
 import firebase from "firebase/app";
 import {
   CollectionReference,
-  createDataRecord,
-  DataRecord,
   db,
   DocumentReference,
   Query,
   Timestamp,
 } from "../misc/firebase";
+import {
+  createDataRecord,
+  DataRecord,
+  DocumentData,
+  isDocumentData,
+  modelToDocumentData,
+} from "./DataRecord";
 
 export interface Task extends DataRecord {
+  archived: boolean;
   complete: boolean;
   title: string;
   userId: string;
 }
 
-export type TaskData = Omit<Task, "id">;
+export type TaskData = DocumentData<Task>;
 export type TaskReference = DocumentReference<TaskData>;
 export type TaskCollectionReference = CollectionReference<TaskData>;
 export type TaskQuery = Query<TaskData>;
@@ -35,6 +41,18 @@ export async function postTask(userId: string, task: Task): Promise<Task> {
     id: doc.id,
     userId,
   };
+}
+
+export async function archiveTasks(tasks: Task[]): Promise<void> {
+  const batch = db.batch();
+
+  const data: Partial<Task> = { archived: true };
+  tasks.forEach((task) => {
+    const doc = getTaskDoc(task);
+    batch.update(doc, data);
+  });
+
+  return batch.commit();
 }
 
 export function completeTask(task: Task, complete: boolean): Promise<void> {
@@ -69,22 +87,31 @@ export function getTaskDoc(task: Task): TaskReference {
   return getTaskCollection().doc(id);
 }
 
-export function createTask(initial?: Partial<Task>): Task {
+export function createTask(initial?: Partial<Task> | DocumentData<Task>): Task {
+  if (isDocumentData(initial)) {
+    const { createdAt, ...data } = initial;
+    return createTask({
+      createdAt: createdAt.toMillis(),
+      ...data,
+    });
+  }
+
   return {
-    ...createDataRecord(),
-    complete: false,
-    title: "",
-    userId: "",
-    ...initial,
+    ...createDataRecord(initial),
+    archived: initial?.archived || false,
+    complete: initial?.complete || false,
+    title: initial?.title || "",
+    userId: initial?.userId || "",
   };
 }
 
 export function taskToData(task: Task): TaskData {
-  const { id, ...data } = task;
-  return data;
+  return modelToDocumentData(task);
 }
 
-export function ssToTask(ss: firebase.firestore.QueryDocumentSnapshot): Task {
+export function ssToTask(
+  ss: firebase.firestore.QueryDocumentSnapshot<DocumentData<Task>>
+): Task {
   if (!ss.exists) {
     return createTask({ title: "No longer exist" });
   }

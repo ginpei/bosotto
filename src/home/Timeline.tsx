@@ -1,22 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { connect } from "react-redux";
 import { auth } from "../misc/firebase";
-import { noop } from "../misc/misc";
+import { AppState } from "../models/appReducer";
 import { useCurrentUserId } from "../models/CurrentUser";
-import {
-  createTalk,
-  getUserTalkCollection,
-  postTalk,
-  ssToTalk,
-  Talk,
-} from "../models/Talk";
+import { createTalk, postTalk } from "../models/Talk";
 import { OnTalkEvent, TalkForm } from "./TalkForm";
 import "./Timeline.scss";
 import { TimelineTalk } from "./TimelineTalk";
 
-export const Timeline: React.FC = () => {
+const mapState = (state: AppState) => ({
+  talks: state.talks,
+});
+
+const TimelineInner: React.FC<ReturnType<typeof mapState>> = ({ talks }) => {
   const userId = useCurrentUserId();
   const [newTalk, setNewTalk] = useState(createTalk());
-  const [talks, setTalks] = useState<Talk[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
   const onHeaderClick = () => {
@@ -46,22 +44,8 @@ export const Timeline: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (!userId) {
-      setTalks([]);
-      return noop;
-    }
-
-    return getUserTalkCollection(userId)
-      .orderBy("createdAt", "desc")
-      .onSnapshot((ss) => {
-        const list = ss.docs.map((v) => ssToTalk(v));
-        setTalks(list);
-      });
-  }, [userId]);
-
   return (
-    <section className="Timeline">
+    <section className="Timeline" data-focus-name="timeline">
       <header className="Timeline-header" onClick={onHeaderClick}>
         <h1 className="Timeline-title">Timeline</h1>
       </header>
@@ -82,3 +66,5 @@ export const Timeline: React.FC = () => {
     </section>
   );
 };
+
+export const Timeline = connect(mapState)(TimelineInner);

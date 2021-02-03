@@ -15,11 +15,6 @@ export type Query<
   T = firebase.firestore.DocumentData
 > = firebase.firestore.Query<T>;
 
-export interface DataRecord {
-  createdAt: Timestamp;
-  id: string;
-}
-
 export class Timestamp extends firebase.firestore.Timestamp {}
 
 export const zeroTimestamp = new Timestamp(0, 0);
@@ -55,12 +50,4 @@ export function initializeFirebase(): firebase.app.App {
   }
 
   return app;
-}
-
-export function createDataRecord(initial?: Partial<DataRecord>): DataRecord {
-  return {
-    createdAt: zeroTimestamp,
-    id: "",
-    ...initial,
-  };
 }

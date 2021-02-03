@@ -1,6 +1,5 @@
 import NiceMarkdown from "@ginpei/react-nice-markdown";
 import dayjs from "dayjs";
-import { Timestamp } from "../misc/firebase";
 import { Talk } from "../models/Talk";
 import "./TimelineTalk.scss";
 
@@ -21,8 +20,8 @@ export const TimelineTalk: React.FC<{ talk: Talk }> = ({ talk }) => {
   );
 };
 
-function getDateTimeString(timestamp: Timestamp) {
-  const d = dayjs(timestamp.toDate());
+function getDateTimeString(timestamp: number) {
+  const d = dayjs(timestamp);
 
   const isToday = d.format("YYYY-MM-DD") === dayjs().format("YYYY-MM-DD");
   if (isToday) {

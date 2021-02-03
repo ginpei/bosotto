@@ -1,32 +1,39 @@
-import { useEffect, useState } from "react";
-import { noop } from "../misc/misc";
+import { useState } from "react";
+import { connect } from "react-redux";
+import { Dispatch } from "redux";
+import { appSlice, AppState } from "../models/appReducer";
 import { useCurrentUserId } from "../models/CurrentUser";
 import { createTalk, postTalk } from "../models/Talk";
 import {
+  archiveTasks,
   completeTask,
   createTask,
   deleteTask,
-  getUserTaskCollection,
   OnTaskEvent,
   postTask,
-  ssToTask,
   Task,
 } from "../models/Task";
 import { DashboardSection } from "./Dashboard";
 import { TaskForm } from "./TaskForm";
-import { TaskListItem } from "./TaskListItem";
+import { TaskArchivedListItem, TaskListItem } from "./TaskListItem";
 import "./TaskSection.scss";
 
-export const TaskSection: React.FC = () => {
+const mapState = (state: AppState) => ({
+  userTasks: state.userTasks,
+  showingArchivedTasks: state.showingArchivedTasks,
+});
+
+const mapDispatch = (dispatch: Dispatch) => ({
+  setShowingArchivedTasks: (show: boolean) =>
+    dispatch(appSlice.actions.setShowingArchivedTasks({ show })),
+});
+
+const TaskSectionInner: React.FC<
+  ReturnType<typeof mapState> & ReturnType<typeof mapDispatch>
+> = ({ setShowingArchivedTasks, showingArchivedTasks, userTasks }) => {
   const userId = useCurrentUserId();
   const [newTask, setNewTask] = useState(createTask());
-  const [tasks, setTasks] = useState<Task[]>([]);
   const [submitting, setSubmitting] = useState(false);
-  const [hidingComplete, setFilteringComplete] = useState(false);
-
-  const availableTasks = hidingComplete
-    ? tasks.filter((v) => !v.complete)
-    : tasks;
 
   const onNewTaskChange: OnTaskEvent = (task) => {
     setNewTask(task);
@@ -55,10 +62,12 @@ export const TaskSection: React.FC = () => {
     }
   };
 
-  const onHidingCompleteChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setFilteringComplete(event.currentTarget.checked);
+  const onShowArchivedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setShowingArchivedTasks(event.currentTarget.checked);
+  };
+
+  const onArchiveCompletesClick = () => {
+    archiveTasks(userTasks.filter((v) => !v.archived && v.complete));
   };
 
   const onTaskComplete: OnTaskEvent = async (task: Task) => {
@@ -95,20 +104,6 @@ export const TaskSection: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (!userId) {
-      setTasks([]);
-      return noop;
-    }
-
-    return getUserTaskCollection(userId)
-      .orderBy("createdAt", "desc")
-      .onSnapshot((ss) => {
-        const list = ss.docs.map((v) => ssToTask(v));
-        setTasks(list);
-      });
-  }, [userId]);
-
   return (
     <DashboardSection className="TaskSection" title="Tasks">
       <TaskForm
@@ -120,26 +115,34 @@ export const TaskSection: React.FC = () => {
       <p>
         <label>
           <input
-            checked={hidingComplete}
-            name="hidingComplete"
-            onChange={onHidingCompleteChange}
+            checked={showingArchivedTasks}
+            name="showingArchived"
+            onChange={onShowArchivedChange}
             type="checkbox"
           />{" "}
-          Hide complete
+          Show archived
         </label>
+        <button onClick={onArchiveCompletesClick}>Archive all completes</button>
       </p>
       <ul className="TaskSection-taskList">
-        {availableTasks.map((task) => (
-          <TaskListItem
-            key={task.id}
-            onCompleteToggle={onTaskComplete}
-            onDelete={onTaskDelete}
-            onStart={onTaskStart}
-            onStop={onTaskStop}
-            task={task}
-          />
-        ))}
+        {/* TODO filter by archived */}
+        {userTasks.map((task) =>
+          task.archived ? (
+            <TaskArchivedListItem key={task.id} task={task} />
+          ) : (
+            <TaskListItem
+              key={task.id}
+              onCompleteToggle={onTaskComplete}
+              onDelete={onTaskDelete}
+              onStart={onTaskStart}
+              onStop={onTaskStop}
+              task={task}
+            />
+          )
+        )}
       </ul>
     </DashboardSection>
   );
 };
+
+export const TaskSection = connect(mapState, mapDispatch)(TaskSectionInner);

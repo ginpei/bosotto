@@ -1,4 +1,5 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
+import { Talk } from "./Talk";
 import { Task } from "./Task";
 
 export type AppState = ReturnType<ReturnType<typeof createAppSlice>["reducer"]>;
@@ -15,6 +16,7 @@ function createAppSlice() {
       count: 0,
       focus: "",
       showingArchivedTasks: false,
+      talks: [] as Talk[],
       userTasks: [] as Task[],
     },
     reducers: {
@@ -30,6 +32,10 @@ function createAppSlice() {
       ) => ({
         ...state,
         showingArchivedTasks: action.payload.show,
+      }),
+      setTalks: (state, action: { payload: { talks: Talk[] } }) => ({
+        ...state,
+        talks: action.payload.talks,
       }),
       setUserTasks: (state, action: { payload: { userTasks: Task[] } }) => ({
         ...state,

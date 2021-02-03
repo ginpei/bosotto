@@ -7,6 +7,7 @@ import { useCurrentUserId } from "../models/CurrentUser";
 import { defaultShortcuts } from "../models/defaultShortcuts";
 import { useCurrentFocusAttr } from "../models/Focus";
 import { useKeyboardShortcuts } from "../models/KeyboardOperation";
+import { getUserTalkCollection, ssToTalk, Talk } from "../models/Talk";
 import { getUserTaskCollection, ssToTask, Task } from "../models/Task";
 import { AppHeader } from "../shared/layouts/AppHeader";
 import { Dashboard } from "./Dashboard";
@@ -19,16 +20,18 @@ const mapState = (state: AppState) => ({
 });
 
 const mapDispatch = (dispatch: Dispatch) => ({
+  setTalks: (talks: Talk[]) => dispatch(appSlice.actions.setTalks({ talks })),
   setUserTasks: (userTasks: Task[]) =>
     dispatch(appSlice.actions.setUserTasks({ userTasks })),
 });
 
 const HomePageInner: React.FC<
   ReturnType<typeof mapState> & ReturnType<typeof mapDispatch>
-> = ({ focus, setUserTasks, showingArchivedTasks }) => {
+> = ({ focus, setTalks, setUserTasks, showingArchivedTasks }) => {
   useKeyboardShortcuts(appStore, defaultShortcuts);
   useCurrentFocusAttr(focus);
   const userId = useCurrentUserId();
+  useUserTalksConnection(userId, setTalks);
   useUserTaskConnection(userId, showingArchivedTasks, setUserTasks);
 
   return (
@@ -47,6 +50,24 @@ const HomePageInner: React.FC<
 };
 
 export const HomePage = connect(mapState, mapDispatch)(HomePageInner);
+
+function useUserTalksConnection(
+  userId: string,
+  setTalks: (talks: Talk[]) => { payload: { talks: Talk[] }; type: string }
+) {
+  useEffect(() => {
+    if (!userId) {
+      return noop;
+    }
+
+    const query = getUserTalkCollection(userId).orderBy("createdAt", "desc");
+
+    return query.onSnapshot((ss) => {
+      const userTasks = ss.docs.map((v) => ssToTalk(v));
+      setTalks(userTasks);
+    });
+  }, [setTalks, userId]);
+}
 
 function useUserTaskConnection(
   userId: string,

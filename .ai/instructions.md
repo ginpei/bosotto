@@ -27,6 +27,7 @@ Example:
 
 - Communicate with users in Japanese
 - Write code comments in English
+- Write commit messages in English
 - Keep documentation in English unless specifically requested in Japanese
 - Variable names, function names, and other code identifiers should be in English
 

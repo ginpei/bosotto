@@ -78,3 +78,21 @@
 - `npm run dev` で両方のサーバーを同時に起動
 - 個別に起動したい場合は `npm run dev:server` または `npm run dev:client` を使用
 - 出力を見やすくするために、concurrentlyの色分け機能を使用
+
+## 2025-03-07 00:16
+
+### 開発スクリプトの最適化
+
+#### 計画
+- `dev:client` コマンドからウェブサーバー機能を削除し、ファイルビルドのみを行うように変更
+- `dev:server` が既にウェブサーバーを提供しているため、重複を避ける
+
+#### 実装
+- `package.json` の `dev:client` スクリプトを変更
+  - 変更前: `"dev:client": "vite"`
+  - 変更後: `"dev:client": "vite build --watch"`
+
+#### 決定事項
+- `npm run dev:client` はファイルの変更を監視して自動的にビルドするが、サーバーは起動しない
+- `npm run dev:server` は引き続き Hono サーバーを起動して、ビルドされたファイルを配信する
+- `npm run dev` は両方を同時に実行するので、開発体験は変わらない

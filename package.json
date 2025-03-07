@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\" --names \"server,client\" --prefix-colors \"blue,green\"",
     "dev:server": "tsx watch src/index.ts",
-    "dev:client": "vite",
+    "dev:client": "vite build --watch",
     "build": "vite build",
     "preview": "vite preview",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx}\"",

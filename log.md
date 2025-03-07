@@ -3,7 +3,8 @@
 ## Table of Contents
 - [2025-03-06](#2025-03-06-1) - Project Initialization, Planning, Implementation
 - [2025-03-06](#2025-03-06-2) - Timeline Page Migration, Development Script Improvements
-- [2025-03-07](#2025-03-07) - Development Script Optimization
+- [2025-03-07](#2025-03-07-1) - Development Script Optimization
+- [2025-03-07](#2025-03-07-2) - AI Agent Documentation
 
 ## 2025-03-06 {#2025-03-06-1}
 
@@ -150,7 +151,7 @@ npm install -D concurrently
 }
 ```
 
-## 2025-03-07 {#2025-03-07}
+## 2025-03-07 {#2025-03-07-1}
 
 ### Development Script Optimization #devops #performance
 
@@ -181,3 +182,38 @@ npm install -D concurrently
     "dev:client": "vite build --watch"
   }
 }
+```
+
+## 2025-03-07 {#2025-03-07-2}
+
+### AI Agent Documentation #documentation #ai
+
+#### Planning
+- Create documentation specifically for AI agents working with the project
+- Organize instructions, project context, and contribution guidelines
+- Store documentation in a dedicated directory for easy access and maintenance
+
+#### Implementation
+- Created `.ai/` directory to store AI agent documentation
+- Created the following documentation files:
+  - `.ai/instructions.md` - Communication style and task handling instructions
+  - `.ai/project-context.md` - Project overview and architecture
+  - `.ai/guidelines.md` - Contribution guidelines and development practices
+  - `.ai/README.md` - Documentation overview and usage instructions
+
+#### Decisions
+- Used Markdown format for all documentation for readability and compatibility
+- Organized documentation into separate files by purpose
+- Included detailed information about Zundamon communication style
+- Provided comprehensive project context to reduce the need for AI agents to scan all files
+- Added clear contribution guidelines to maintain code quality and consistency
+
+#### AI Context
+- **Documentation Purpose**: Created to improve efficiency of AI agent interactions and ensure consistent communication style
+- **Knowledge Persistence**: Documented project understanding to avoid redundant analysis in future interactions
+- **Communication Standards**: Established clear guidelines for Zundamon-style responses and language usage
+- **Related Files**:
+  - [`.ai/instructions.md`](./.ai/instructions.md) - AI agent instructions
+  - [`.ai/project-context.md`](./.ai/project-context.md) - Project structure documentation
+  - [`.ai/guidelines.md`](./.ai/guidelines.md) - Contribution guidelines
+  - [`.ai/README.md`](./.ai/README.md) - Documentation overview

@@ -44,14 +44,14 @@ const TimelinePage: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
-      <h1 className="text-3xl font-bold mb-6">Twitter風メモ帳</h1>
+      <h1 className="text-3xl font-bold mb-6">Twitter-style Notepad</h1>
 
       {/* Post form */}
       <div className="mb-6 p-4 bg-white rounded-lg shadow">
         <textarea
           className="w-full p-2 border rounded-lg mb-2"
           rows={3}
-          placeholder="いまどうしてる？"
+          placeholder="What are you doing now?"
           value={newPostContent}
           onChange={(e) => setNewPostContent(e.currentTarget.value)}
         />
@@ -60,7 +60,7 @@ const TimelinePage: React.FC = () => {
             className="px-4 py-2 bg-blue-500 text-white rounded-full font-bold"
             onClick={handleAddPost}
           >
-            投稿する
+            Post
           </button>
         </div>
       </div>
@@ -77,7 +77,7 @@ const TimelinePage: React.FC = () => {
                 className="text-red-500"
                 onClick={() => handleDeletePost(post.id)}
               >
-                削除
+                Delete
               </button>
             </div>
             <p className="mt-2 whitespace-pre-wrap">{post.content}</p>
@@ -86,7 +86,7 @@ const TimelinePage: React.FC = () => {
 
         {posts.length === 0 && (
           <p className="text-center text-gray-500 py-8">
-            投稿はまだありません。最初の投稿をしてみましょう！
+            There are no posts yet. Let's make your first post!
           </p>
         )}
       </div>

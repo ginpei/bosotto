@@ -5,6 +5,55 @@ import fs from 'fs';
 import path from 'path';
 
 const app = new Hono();
+let buildReady = false;
+let checkInterval: NodeJS.Timeout | null = null;
+
+// Required build files to check
+const requiredFiles = [
+  './dist/src/client/pages/home/index.html',
+  './dist/src/client/pages/tl/tl.html',
+];
+
+// Function to check if all required build files exist
+function checkBuildFiles(): boolean {
+  try {
+    for (const file of requiredFiles) {
+      if (!fs.existsSync(path.resolve(file))) {
+        return false;
+      }
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+// Function to get the "build in progress" HTML
+function getBuildInProgressHtml(): string {
+  return fs.readFileSync(path.resolve('./src/server/build-in-progress.html'), 'utf-8');
+}
+
+// Check build status initially
+buildReady = checkBuildFiles();
+console.log(buildReady 
+  ? '🟢 Build files found! Starting in normal mode' 
+  : '🟠 Build files not found yet. Starting in build-in-progress mode');
+
+// Set up polling to check for build files if they don't exist yet
+if (!buildReady) {
+  console.log('🔍 Waiting for client build to complete...');
+  checkInterval = setInterval(() => {
+    const newBuildReady = checkBuildFiles();
+    if (newBuildReady && !buildReady) {
+      buildReady = true;
+      console.log('🎉 Build completed! Server is now operating in normal mode');
+      if (checkInterval) {
+        clearInterval(checkInterval);
+        checkInterval = null;
+      }
+    }
+  }, 1000); // Check every second
+}
 
 // API routes can be added here
 app.get('/api/health', (c) => {
@@ -17,15 +66,28 @@ app.get('/tl', (c) => {
 });
 
 app.get('/tl/', async (c) => {
+  if (!buildReady) {
+    return c.html(getBuildInProgressHtml());
+  }
+  
   const html = fs.readFileSync(path.resolve('./dist/src/client/pages/tl/tl.html'), 'utf-8');
   return c.html(html);
 });
 
-// Serve static files from the dist directory
-app.use('/*', serveStatic({ root: './dist' }));
+// Conditionally serve static files from the dist directory if build is ready
+app.use('/*', async (c, next) => {
+  if (buildReady) {
+    return serveStatic({ root: './dist' })(c, next);
+  }
+  return next();
+});
 
 // Fallback route for home
 app.get('*', async (c) => {
+  if (!buildReady) {
+    return c.html(getBuildInProgressHtml());
+  }
+  
   const html = fs.readFileSync(path.resolve('./dist/src/client/pages/home/index.html'), 'utf-8');
   return c.html(html);
 });
@@ -36,6 +98,17 @@ serve(
     port: 3000,
   },
   (info) => {
-    console.log(`Server is running on http://localhost:${info.port}`);
+    console.log(`🚀 Server is running on http://localhost:${info.port}`);
+    if (!buildReady) {
+      console.log('⏳ Showing "Build in Progress" page until client build completes');
+    }
   }
 );
+
+// Clean up interval on process exit
+process.on('SIGINT', () => {
+  if (checkInterval) {
+    clearInterval(checkInterval);
+  }
+  process.exit(0);
+});

@@ -6,6 +6,7 @@
 - [2025-03-07](#2025-03-07-1) - Development Script Optimization
 - [2025-03-07](#2025-03-07-2) - AI Agent Documentation
 - [2025-03-07](#2025-03-07-3) - Markdown Support for Posts
+- [2025-03-07](#2025-03-07-4) - HTML Files Reorganization
 
 ## 2025-03-06 {#2025-03-06-1}
 
@@ -261,3 +262,36 @@ npm install react-markdown remark-gfm rehype-sanitize react-syntax-highlighter @
 - **Related Files**:
   - [`src/client/pages/tl/TimelinePage.tsx`](./src/client/pages/tl/TimelinePage.tsx) - Updated to support markdown
   - [`src/client/pages/tl/components/markdown-styles.css`](./src/client/pages/tl/components/markdown-styles.css) - Styles for markdown elements
+
+## 2025-03-07 {#2025-03-07-4}
+
+### HTML Files Reorganization #refactor #structure
+
+#### Planning
+- Move HTML files from the root directory to their respective page directories under `src/client/pages/`
+- Update build configuration to reference the new file locations
+- Update server code to reference the new build output locations
+- Ensure server code continues to work with the new structure
+
+#### Implementation
+- Moved HTML files to their respective page directories:
+  - Moved `index.html` to `src/client/pages/home/index.html`
+  - Moved `tl.html` to `src/client/pages/tl/tl.html`
+- Updated Vite configuration in `vite.config.ts` to point to the new file locations
+- Updated server code in `src/server/index.ts` to reference the new build output locations
+- Removed the original HTML files from the root directory
+
+#### Decisions
+- Kept the HTML file content unchanged, only modified their location
+- Placed HTML files in their respective page directories to better organize the project structure
+- Updated server code to reference the new build output locations
+
+#### AI Context
+- **Project Organization**: Improved project structure by moving HTML files to their respective page directories
+- **Build Process**: Updated Vite configuration to build from the new source locations
+- **Server Configuration**: Updated server code to reference the new build output locations
+- **Related Files**:
+  - [`src/client/pages/home/index.html`](./src/client/pages/home/index.html) - Home page HTML template
+  - [`src/client/pages/tl/tl.html`](./src/client/pages/tl/tl.html) - Timeline page HTML template
+  - [`vite.config.ts`](./vite.config.ts) - Updated build configuration
+  - [`src/server/index.ts`](./src/server/index.ts) - Updated server code

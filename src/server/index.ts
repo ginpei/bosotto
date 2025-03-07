@@ -17,7 +17,7 @@ app.get('/tl', (c) => {
 });
 
 app.get('/tl/', async (c) => {
-  const html = fs.readFileSync(path.resolve('./dist/tl.html'), 'utf-8');
+  const html = fs.readFileSync(path.resolve('./dist/src/client/pages/tl/tl.html'), 'utf-8');
   return c.html(html);
 });
 
@@ -26,7 +26,7 @@ app.use('/*', serveStatic({ root: './dist' }));
 
 // Fallback route for home
 app.get('*', async (c) => {
-  const html = fs.readFileSync(path.resolve('./dist/index.html'), 'utf-8');
+  const html = fs.readFileSync(path.resolve('./dist/src/client/pages/home/index.html'), 'utf-8');
   return c.html(html);
 });
 

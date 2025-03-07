@@ -1,4 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeSanitize from 'rehype-sanitize';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import './components/markdown-styles.css';
+
+// Define a type for the code component props
+interface CodeProps {
+  node?: any;
+  inline?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+  [key: string]: any;
+}
 
 interface Post {
   id: string;
@@ -10,6 +25,7 @@ interface Post {
 const TimelinePage: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPostContent, setNewPostContent] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
 
   // Load posts from localStorage on component mount
   useEffect(() => {
@@ -48,14 +64,34 @@ const TimelinePage: React.FC = () => {
 
       {/* Post form */}
       <div className="mb-6 p-4 bg-white rounded-lg shadow">
-        <textarea
-          className="w-full p-2 border rounded-lg mb-2"
-          rows={3}
-          placeholder="What are you doing now?"
-          value={newPostContent}
-          onChange={(e) => setNewPostContent(e.currentTarget.value)}
-        />
-        <div className="flex justify-end">
+        {/* Input area */}
+        <div className="w-full">
+          <textarea
+            className="w-full p-2 border rounded-lg mb-2"
+            rows={5}
+            placeholder="What are you doing now? (Markdown supported)"
+            value={newPostContent}
+            onChange={(e) => setNewPostContent(e.currentTarget.value)}
+          />
+        </div>
+        
+        {/* Post button and checkbox */}
+        <div className="flex justify-between items-center mb-3">
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="show-preview"
+              checked={showPreview}
+              onChange={(e) => setShowPreview(e.target.checked)}
+              className="mr-2"
+            />
+            <label htmlFor="show-preview" className="text-sm">プレビューを表示</label>
+          </div>
+          
+          <div className="text-xs text-gray-500 mx-2">
+            Markdown supported: **bold**, *italic*, [links](url), `code`, etc.
+          </div>
+          
           <button
             className="px-4 py-2 bg-blue-500 text-white rounded-full font-bold"
             onClick={handleAddPost}
@@ -63,6 +99,44 @@ const TimelinePage: React.FC = () => {
             Post
           </button>
         </div>
+        
+        {/* Preview (below the post button) */}
+        {showPreview && (
+          <div className="w-full p-2 border rounded-lg prose max-w-none overflow-auto">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeSanitize]}
+              components={{
+                code({node, inline, className, children, ...props}: CodeProps) {
+                  const match = /language-(\w+)/.exec(className || '');
+                  return !inline && match ? (
+                    <SyntaxHighlighter
+                      style={vs as any}
+                      language={match[1]}
+                      PreTag="div"
+                      {...props}
+                    >
+                      {String(children).replace(/\n$/, '')}
+                    </SyntaxHighlighter>
+                  ) : (
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
+                  );
+                },
+                a({node, children, href, ...props}: any) {
+                  return (
+                    <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
+                      {children}
+                    </a>
+                  );
+                }
+              }}
+            >
+              {newPostContent}
+            </ReactMarkdown>
+          </div>
+        )}
       </div>
 
       {/* Posts list */}
@@ -80,7 +154,40 @@ const TimelinePage: React.FC = () => {
                 Delete
               </button>
             </div>
-            <p className="mt-2 whitespace-pre-wrap">{post.content}</p>
+            <div className="mt-2 prose max-w-none">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeSanitize]}
+                components={{
+                  code({node, inline, className, children, ...props}: CodeProps) {
+                    const match = /language-(\w+)/.exec(className || '');
+                    return !inline && match ? (
+                      <SyntaxHighlighter
+                        style={vs as any}
+                        language={match[1]}
+                        PreTag="div"
+                        {...props}
+                      >
+                        {String(children).replace(/\n$/, '')}
+                      </SyntaxHighlighter>
+                    ) : (
+                      <code className={className} {...props}>
+                        {children}
+                      </code>
+                    );
+                  },
+                  a({node, children, href, ...props}: any) {
+                    return (
+                      <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
+                        {children}
+                      </a>
+                    );
+                  }
+                }}
+              >
+                {post.content}
+              </ReactMarkdown>
+            </div>
           </div>
         ))}
 

@@ -12,9 +12,14 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "hono": "^4.7.4",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.0.1",
+    "react-syntax-highlighter": "^15.6.1",
+    "rehype-sanitize": "^6.0.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.11",

@@ -5,6 +5,7 @@
 - [2025-03-06](#2025-03-06-2) - Timeline Page Migration, Development Script Improvements
 - [2025-03-07](#2025-03-07-1) - Development Script Optimization
 - [2025-03-07](#2025-03-07-2) - AI Agent Documentation
+- [2025-03-07](#2025-03-07-3) - Markdown Support for Posts
 
 ## 2025-03-06 {#2025-03-06-1}
 
@@ -217,3 +218,46 @@ npm install -D concurrently
   - [`.ai/project-context.md`](./.ai/project-context.md) - Project structure documentation
   - [`.ai/guidelines.md`](./.ai/guidelines.md) - Contribution guidelines
   - [`.ai/README.md`](./.ai/README.md) - Documentation overview
+
+## 2025-03-07 {#2025-03-07-3}
+
+### Markdown Support for Posts #feature #enhancement
+
+#### Planning
+- Add markdown support for posts in the timeline
+- Implement a preview feature to see rendered markdown while typing
+- Ensure proper styling for markdown elements
+- Make links clickable and support code syntax highlighting
+- Design preview toggle as a checkbox instead of buttons
+- Position preview below the post button
+
+#### Implementation
+- Installed necessary packages
+```bash
+npm install react-markdown remark-gfm rehype-sanitize react-syntax-highlighter @types/react-syntax-highlighter
+```
+- Modified `TimelinePage.tsx` to render posts as markdown
+- Added a checkbox to toggle preview visibility
+- Created custom CSS styles for markdown elements
+- Added custom components for links and code blocks
+- Implemented syntax highlighting for code blocks
+- Positioned preview area below the post button
+
+#### Decisions
+- Used `react-markdown` for its simplicity and good React integration
+- Added `remark-gfm` plugin to support GitHub Flavored Markdown (tables, autolinks, etc.)
+- Used `rehype-sanitize` to prevent XSS attacks
+- Created a dedicated CSS file for markdown styling
+- Made all posts use markdown rendering (no backward compatibility needed)
+- Added a helpful hint about markdown syntax below the post form
+- Used a checkbox labeled "プレビューを表示" for toggling preview visibility
+- Set preview to be hidden by default
+
+#### AI Context
+- **User Experience**: Added preview functionality to help users see how their markdown will render
+- **Security**: Implemented sanitization to prevent security issues with user-generated content
+- **Styling**: Created comprehensive styles for all markdown elements to ensure consistent appearance
+- **UI Improvements**: Redesigned preview toggle to use a checkbox and positioned preview below the post button for better usability
+- **Related Files**:
+  - [`src/client/pages/tl/TimelinePage.tsx`](./src/client/pages/tl/TimelinePage.tsx) - Updated to support markdown
+  - [`src/client/pages/tl/components/markdown-styles.css`](./src/client/pages/tl/components/markdown-styles.css) - Styles for markdown elements

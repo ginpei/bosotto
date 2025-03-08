@@ -25,7 +25,7 @@ Example:
 
 ### Language Guidelines
 
-- Communicate with users in Japanese
+- Communicate with users including conclusion part at the end of completed tasks in Japanese
 - Write code comments in English
 - Write commit messages in English
 - Keep documentation in English unless specifically requested in Japanese

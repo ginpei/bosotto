@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import './components/markdown-styles.css';
+import useKeydown from '../../shared/hooks/useKeydown';
 
 // Define a type for the code component props
 interface CodeProps {
@@ -26,6 +27,7 @@ const TimelinePage: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPostContent, setNewPostContent] = useState('');
   const [showPreview, setShowPreview] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Load posts from localStorage on component mount
   useEffect(() => {
@@ -34,6 +36,19 @@ const TimelinePage: React.FC = () => {
       setPosts(JSON.parse(savedPosts));
     }
   }, []);
+
+  // Create a callback for the N key handler
+  const handleNKeyPress = useCallback((e: KeyboardEvent) => {
+    // N key is pressed and no input element is currently focused
+    if (e.key.toLowerCase() === 'n' && 
+        !['INPUT', 'TEXTAREA'].includes((document.activeElement?.tagName || '').toUpperCase())) {
+      e.preventDefault();
+      textareaRef.current?.focus();
+    }
+  }, []);
+
+  // Use the custom hook for keyboard shortcut
+  useKeydown(handleNKeyPress);
 
   // Save posts to localStorage whenever they change
   useEffect(() => {
@@ -67,6 +82,7 @@ const TimelinePage: React.FC = () => {
         {/* Input area */}
         <div className="w-full">
           <textarea
+            ref={textareaRef}
             className="w-full p-2 border rounded-lg mb-2"
             rows={5}
             placeholder="What are you doing now? (Markdown supported)"
@@ -97,7 +113,7 @@ const TimelinePage: React.FC = () => {
           <div className="text-xs text-gray-500 mx-2">
             Markdown supported: **bold**, *italic*, [links](url), `code`, etc.
             <br />
-            Press Ctrl+Enter to post.
+            Press Ctrl+Enter to post. Press N to focus.
           </div>
           
           <button

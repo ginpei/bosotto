@@ -9,6 +9,8 @@
 - [2025-03-07](#2025-03-07-4) - HTML Files Reorganization
 - [2025-03-07](#2025-03-07-5) - Server Build Detection Improvement
 - [2025-03-07](#2025-03-07-6) - Ctrl+Enter Post Submission
+- [2025-03-07](#2025-03-07-7) - N Key Shortcut for Post Form Focus
+- [2025-03-07](#2025-03-07-8) - Keyboard Event Handler Refactoring
 
 ## 2025-03-06 {#2025-03-06-1}
 
@@ -360,3 +362,71 @@ npm install react-markdown remark-gfm rehype-sanitize react-syntax-highlighter @
 - **Accessibility**: Provided alternative input method for users who prefer keyboard navigation
 - **Related Files**:
   - [`src/client/pages/tl/TimelinePage.tsx`](./src/client/pages/tl/TimelinePage.tsx) - Updated with Ctrl+Enter functionality
+
+## 2025-03-07 {#2025-03-07-7}
+
+### N Key Shortcut for Post Form Focus #enhancement #ux
+
+#### Planning
+- Add keyboard shortcut to quickly focus on the post form
+- Use the 'N' key as the shortcut (similar to Twitter's 'n' for new tweet)
+- Add a hint in the UI to inform users about this functionality
+
+#### Implementation
+- Modified `src/client/pages/tl/TimelinePage.tsx` to:
+  - Add a `useRef` for the textarea element
+  - Add a global keyboard event listener using `useEffect`
+  - Detect 'N' key press when no other input is focused
+  - Focus the textarea when the shortcut is triggered
+  - Add a hint text about the 'N' key shortcut
+
+#### Decisions
+- Used `useRef` to get a reference to the textarea DOM element
+- Added case-insensitive detection with `e.key.toLowerCase() === 'n'`
+- Added a check to prevent the shortcut from triggering when other inputs are focused
+- Updated the existing hint text to include information about the new shortcut
+- Used a clean event listener setup/cleanup pattern with `useEffect`
+
+#### AI Context
+- **User Experience**: Improved navigation by allowing quick access to the post form
+- **Accessibility**: Enhanced keyboard navigation for users who prefer not to use the mouse
+- **Implementation Pattern**: Used React best practices with hooks and refs
+- **Related Files**:
+  - [`src/client/pages/tl/TimelinePage.tsx`](./src/client/pages/tl/TimelinePage.tsx) - Updated with 'N' key shortcut functionality
+
+## 2025-03-07 {#2025-03-07-8}
+
+### Keyboard Event Handler Refactoring #refactor #enhancement
+
+#### Planning
+- Refactor keyboard event handling into a reusable custom hook
+- Create a shared hook that can be used across the application
+- Improve code organization and maintainability
+
+#### Implementation
+- Created a new directory for shared hooks:
+  - Created `src/client/shared/hooks/` directory
+- Created a reusable keyboard event hook:
+  - Created `src/client/shared/hooks/useKeydown.ts`
+  - Implemented a flexible hook that can attach to any element
+  - Added support for both direct elements and React refs
+- Modified `TimelinePage.tsx` to use the new hook:
+  - Replaced the inline `useEffect` with the custom hook
+  - Used `useCallback` to memoize the event handler function
+
+#### Decisions
+- Named the hook `useKeydown` for simplicity and clarity
+- Made the hook flexible by allowing it to attach to any element, not just document
+- Added support for React refs to make it easier to use with React components
+- Used TypeScript to ensure type safety
+- Used `useCallback` in the component to prevent unnecessary re-renders
+- Placed the hook in the shared directory to make it available for reuse across the application
+
+#### AI Context
+- **Code Organization**: Improved code structure by extracting reusable logic into a custom hook
+- **Reusability**: Created a hook that can be used in multiple components
+- **Type Safety**: Used TypeScript to ensure proper typing of the hook parameters and return values
+- **Performance**: Used `useCallback` to optimize performance by preventing unnecessary re-renders
+- **Related Files**:
+  - [`src/client/shared/hooks/useKeydown.ts`](./src/client/shared/hooks/useKeydown.ts) - New custom hook
+  - [`src/client/pages/tl/TimelinePage.tsx`](./src/client/pages/tl/TimelinePage.tsx) - Updated to use the custom hook

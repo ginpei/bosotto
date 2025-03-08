@@ -10,44 +10,6 @@
 - [2025-03-07](#2025-03-07-5) - Server Build Detection Improvement
 - [2025-03-07](#2025-03-07-6) - Ctrl+Enter Post Submission
 
-## 2025-03-07 {#2025-03-07-5}
-
-### Server Build Detection Improvement #bugfix #enhancement
-
-#### Planning
-- Fix issue where server is accessible before client build completes, causing ENOENT errors
-- Implement a mechanism to check if required build files exist before serving them
-- Show a "Build in Progress" page while waiting for the client build to complete
-- Add clear console messages about the build status
-
-#### Implementation
-- Created a separate HTML file for the "Build in Progress" page:
-  - Created `src/server/build-in-progress.html` with the loading UI
-- Modified `src/server/index.ts` to:
-  - Add a function to check if required build files exist
-  - Read the "Build in Progress" HTML from the separate file
-  - Set up a polling mechanism to detect when the build is complete
-  - Add clear console messages about the build status
-  - Conditionally serve static files only when the build is ready
-  - Add error handling for file reading operations
-  - Clean up resources on process exit
-
-#### Decisions
-- Used a polling approach (checking every second) to detect when build files are created
-- Created a user-friendly "Build in Progress" page with auto-refresh functionality
-- Added clear console messages with emoji indicators for better visibility
-- Simplified error handling by allowing normal errors to propagate when file reading fails
-- Added cleanup code to ensure resources are properly released on server shutdown
-
-#### AI Context
-- **User Experience**: Improved development experience by showing a helpful message instead of an error page
-- **Error Prevention**: Eliminated ENOENT errors by checking for file existence before attempting to read them
-- **Development Workflow**: Enhanced the development workflow by making the server aware of the client build status
-- **Code Organization**: Separated HTML content from server logic for better maintainability
-- **Related Files**:
-  - [`src/server/index.ts`](./src/server/index.ts) - Updated server code with build detection logic
-  - [`src/server/build-in-progress.html`](./src/server/build-in-progress.html) - HTML template for the "Build in Progress" page
-  
 ## 2025-03-06 {#2025-03-06-1}
 
 ### Project Initialization #setup #init
@@ -335,6 +297,43 @@ npm install react-markdown remark-gfm rehype-sanitize react-syntax-highlighter @
   - [`src/client/pages/tl/tl.html`](./src/client/pages/tl/tl.html) - Timeline page HTML template
   - [`vite.config.ts`](./vite.config.ts) - Updated build configuration
   - [`src/server/index.ts`](./src/server/index.ts) - Updated server code
+
+## 2025-03-07 {#2025-03-07-5}
+
+### Server Build Detection Improvement #bugfix #enhancement
+#### Planning
+- Fix issue where server is accessible before client build completes, causing ENOENT errors
+- Implement a mechanism to check if required build files exist before serving them
+- Show a "Build in Progress" page while waiting for the client build to complete
+- Add clear console messages about the build status
+
+#### Implementation
+- Created a separate HTML file for the "Build in Progress" page:
+  - Created `src/server/build-in-progress.html` with the loading UI
+- Modified `src/server/index.ts` to:
+  - Add a function to check if required build files exist
+  - Read the "Build in Progress" HTML from the separate file
+  - Set up a polling mechanism to detect when the build is complete
+  - Add clear console messages about the build status
+  - Conditionally serve static files only when the build is ready
+  - Add error handling for file reading operations
+  - Clean up resources on process exit
+
+#### Decisions
+- Used a polling approach (checking every second) to detect when build files are created
+- Created a user-friendly "Build in Progress" page with auto-refresh functionality
+- Added clear console messages with emoji indicators for better visibility
+- Simplified error handling by allowing normal errors to propagate when file reading fails
+- Added cleanup code to ensure resources are properly released on server shutdown
+
+#### AI Context
+- **User Experience**: Improved development experience by showing a helpful message instead of an error page
+- **Error Prevention**: Eliminated ENOENT errors by checking for file existence before attempting to read them
+- **Development Workflow**: Enhanced the development workflow by making the server aware of the client build status
+- **Code Organization**: Separated HTML content from server logic for better maintainability
+- **Related Files**:
+  - [`src/server/index.ts`](./src/server/index.ts) - Updated server code with build detection logic
+  - [`src/server/build-in-progress.html`](./src/server/build-in-progress.html) - HTML template for the "Build in Progress" page
   
 ## 2025-03-07 {#2025-03-07-6}
 

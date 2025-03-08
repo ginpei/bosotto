@@ -85,7 +85,7 @@ const TimelinePage: React.FC = () => {
               onChange={(e) => setShowPreview(e.target.checked)}
               className="mr-2"
             />
-            <label htmlFor="show-preview" className="text-sm">プレビューを表示</label>
+            <label htmlFor="show-preview" className="text-sm">Show Preview</label>
           </div>
           
           <div className="text-xs text-gray-500 mx-2">

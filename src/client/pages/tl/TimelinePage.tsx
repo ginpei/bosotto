@@ -72,6 +72,12 @@ const TimelinePage: React.FC = () => {
             placeholder="What are you doing now? (Markdown supported)"
             value={newPostContent}
             onChange={(e) => setNewPostContent(e.currentTarget.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && e.ctrlKey) {
+                e.preventDefault();
+                handleAddPost();
+              }
+            }}
           />
         </div>
         
@@ -90,6 +96,8 @@ const TimelinePage: React.FC = () => {
           
           <div className="text-xs text-gray-500 mx-2">
             Markdown supported: **bold**, *italic*, [links](url), `code`, etc.
+            <br />
+            Press Ctrl+Enter to post.
           </div>
           
           <button

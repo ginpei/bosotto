@@ -8,6 +8,7 @@
 - [2025-03-07](#2025-03-07-3) - Markdown Support for Posts
 - [2025-03-07](#2025-03-07-4) - HTML Files Reorganization
 - [2025-03-07](#2025-03-07-5) - Server Build Detection Improvement
+- [2025-03-07](#2025-03-07-6) - Ctrl+Enter Post Submission
 
 ## 2025-03-07 {#2025-03-07-5}
 
@@ -46,6 +47,7 @@
 - **Related Files**:
   - [`src/server/index.ts`](./src/server/index.ts) - Updated server code with build detection logic
   - [`src/server/build-in-progress.html`](./src/server/build-in-progress.html) - HTML template for the "Build in Progress" page
+  
 ## 2025-03-06 {#2025-03-06-1}
 
 ### Project Initialization #setup #init
@@ -333,3 +335,29 @@ npm install react-markdown remark-gfm rehype-sanitize react-syntax-highlighter @
   - [`src/client/pages/tl/tl.html`](./src/client/pages/tl/tl.html) - Timeline page HTML template
   - [`vite.config.ts`](./vite.config.ts) - Updated build configuration
   - [`src/server/index.ts`](./src/server/index.ts) - Updated server code
+  
+## 2025-03-07 {#2025-03-07-6}
+
+### Ctrl+Enter Post Submission #enhancement #ux
+
+#### Planning
+- Add ability to submit posts using Ctrl+Enter keyboard shortcut
+- Add a hint in the UI to inform users about this functionality
+- Keep the existing "Post" button for mouse users
+
+#### Implementation
+- Modified `src/client/pages/tl/TimelinePage.tsx` to:
+  - Add an `onKeyDown` event handler to the textarea
+  - Detect Ctrl+Enter key combination and trigger post submission
+  - Add a hint text about the Ctrl+Enter shortcut
+
+#### Decisions
+- Used a simple key detection approach with `e.key === 'Enter' && e.ctrlKey`
+- Added a hint text below the markdown syntax information
+- Kept the UI clean by adding the hint to existing help text
+
+#### AI Context
+- **User Experience**: Improved posting workflow by adding keyboard shortcut support
+- **Accessibility**: Provided alternative input method for users who prefer keyboard navigation
+- **Related Files**:
+  - [`src/client/pages/tl/TimelinePage.tsx`](./src/client/pages/tl/TimelinePage.tsx) - Updated with Ctrl+Enter functionality

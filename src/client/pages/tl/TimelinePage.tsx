@@ -74,18 +74,20 @@ const TimelinePage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
-      <h1 className="text-3xl font-bold mb-6">Twitter-style Notepad</h1>
+    <div className="container mx-auto px-2 py-4 max-w-3xl">
+      <div className="bg-white">
+        <div className="flex items-center p-2 bg-gray-100 border-b border-gray-300">
+          <h1 className="text-lg">Notepad</h1>
+        </div>
 
-      {/* Post form */}
-      <div className="mb-6 p-4 bg-white rounded-lg shadow">
-        {/* Input area */}
-        <div className="w-full">
+        {/* Post form */}
+        <div className="p-3 bg-white">
+          {/* Input area */}
           <textarea
             ref={textareaRef}
-            className="w-full p-2 border rounded-lg mb-2"
+            className="w-full p-2 bg-white mb-2 outline-none resize-vertical font-mono"
             rows={5}
-            placeholder="What are you doing now? (Markdown supported)"
+            placeholder="Type your note here... (Markdown supported)"
             value={newPostContent}
             onChange={(e) => setNewPostContent(e.currentTarget.value)}
             onKeyDown={(e) => {
@@ -95,90 +97,35 @@ const TimelinePage: React.FC = () => {
               }
             }}
           />
-        </div>
-        
-        {/* Post button and checkbox */}
-        <div className="flex justify-between items-center mb-3">
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="show-preview"
-              checked={showPreview}
-              onChange={(e) => setShowPreview(e.target.checked)}
-              className="mr-2"
-            />
-            <label htmlFor="show-preview" className="text-sm">Show Preview</label>
-          </div>
           
-          <div className="text-xs text-gray-500 mx-2">
-            Markdown supported: **bold**, *italic*, [links](url), `code`, etc.
-            <br />
-            Press Ctrl+Enter to post. Press N to focus.
-          </div>
-          
-          <button
-            className="px-4 py-2 bg-blue-500 text-white rounded-full font-bold"
-            onClick={handleAddPost}
-          >
-            Post
-          </button>
-        </div>
-        
-        {/* Preview (below the post button) */}
-        {showPreview && (
-          <div className="w-full p-2 border rounded-lg prose max-w-none overflow-auto">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeSanitize]}
-              components={{
-                code({node, inline, className, children, ...props}: CodeProps) {
-                  const match = /language-(\w+)/.exec(className || '');
-                  return !inline && match ? (
-                    <SyntaxHighlighter
-                      style={vs as any}
-                      language={match[1]}
-                      PreTag="div"
-                      {...props}
-                    >
-                      {String(children).replace(/\n$/, '')}
-                    </SyntaxHighlighter>
-                  ) : (
-                    <code className={className} {...props}>
-                      {children}
-                    </code>
-                  );
-                },
-                a({node, children, href, ...props}: any) {
-                  return (
-                    <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
-                      {children}
-                    </a>
-                  );
-                }
-              }}
-            >
-              {newPostContent}
-            </ReactMarkdown>
-          </div>
-        )}
-      </div>
-
-      {/* Posts list */}
-      <div className="space-y-4">
-        {posts.map((post) => (
-          <div key={post.id} className="p-4 bg-white rounded-lg shadow">
-            <div className="flex justify-between">
-              <p className="text-gray-500 text-sm">
-                {new Date(post.createdAt).toLocaleString()}
-              </p>
-              <button
-                className="text-red-500"
-                onClick={() => handleDeletePost(post.id)}
-              >
-                Delete
-              </button>
+          {/* Controls */}
+          <div className="flex justify-between items-center mb-2 text-sm">
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="show-preview"
+                checked={showPreview}
+                onChange={(e) => setShowPreview(e.target.checked)}
+                className="mr-1"
+              />
+              <label htmlFor="show-preview" className="text-sm">Preview</label>
+              <span className="mx-2 text-gray-400">|</span>
+              <span className="text-xs text-gray-500">
+                Markdown: **bold**, *italic*, [links](url), `code` | Ctrl+Enter to save | N to focus
+              </span>
             </div>
-            <div className="mt-2 prose max-w-none">
+            
+            <button
+              className="px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-800"
+              onClick={handleAddPost}
+            >
+              Save Note
+            </button>
+          </div>
+          
+          {/* Preview */}
+          {showPreview && (
+            <div className="w-full p-2 border-t border-gray-200 prose max-w-none overflow-auto">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeSanitize]}
@@ -209,17 +156,72 @@ const TimelinePage: React.FC = () => {
                   }
                 }}
               >
-                {post.content}
+                {newPostContent}
               </ReactMarkdown>
             </div>
-          </div>
-        ))}
+          )}
+        </div>
 
-        {posts.length === 0 && (
-          <p className="text-center text-gray-500 py-8">
-            There are no posts yet. Let's make your first post!
-          </p>
-        )}
+        {/* Notes list */}
+        <div className="bg-white border-t border-gray-300">
+          {posts.map((post, index) => (
+            <div key={post.id} className="p-3">
+              <div className="flex justify-between items-center text-xs text-gray-500 mb-1">
+                <p>
+                  {new Date(post.createdAt).toLocaleString()}
+                </p>
+                <button
+                  className="text-gray-500 hover:text-red-600"
+                  onClick={() => handleDeletePost(post.id)}
+                >
+                  Delete
+                </button>
+              </div>
+              <div className="prose max-w-none">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeSanitize]}
+                  components={{
+                    code({node, inline, className, children, ...props}: CodeProps) {
+                      const match = /language-(\w+)/.exec(className || '');
+                      return !inline && match ? (
+                        <SyntaxHighlighter
+                          style={vs as any}
+                          language={match[1]}
+                          PreTag="div"
+                          {...props}
+                        >
+                          {String(children).replace(/\n$/, '')}
+                        </SyntaxHighlighter>
+                      ) : (
+                        <code className={className} {...props}>
+                          {children}
+                        </code>
+                      );
+                    },
+                    a({node, children, href, ...props}: any) {
+                      return (
+                        <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
+                          {children}
+                        </a>
+                      );
+                    }
+                  }}
+                >
+                  {post.content}
+                </ReactMarkdown>
+              </div>
+            </div>
+          ))}
+
+          {posts.length === 0 && (
+            <div className="p-4 text-center">
+              <p className="text-gray-500">
+                No notes yet. Type something above and save it!
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

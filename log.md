@@ -11,6 +11,7 @@
 - [2025-03-07](#2025-03-07-6) - Ctrl+Enter Post Submission
 - [2025-03-07](#2025-03-07-7) - N Key Shortcut for Post Form Focus
 - [2025-03-07](#2025-03-07-8) - Keyboard Event Handler Refactoring
+- [2025-03-12](#2025-03-12-1) - Notepad-Style UI Redesign
 
 ## 2025-03-06 {#2025-03-06-1}
 
@@ -430,3 +431,60 @@ npm install react-markdown remark-gfm rehype-sanitize react-syntax-highlighter @
 - **Related Files**:
   - [`src/client/shared/hooks/useKeydown.ts`](./src/client/shared/hooks/useKeydown.ts) - New custom hook
   - [`src/client/pages/tl/TimelinePage.tsx`](./src/client/pages/tl/TimelinePage.tsx) - Updated to use the custom hook
+
+## 2025-03-12 {#2025-03-12-1}
+
+### Notepad-Style UI Redesign #ui #redesign
+
+#### Planning
+- Update the application layout to look more like a traditional notepad than Twitter
+- Maintain all existing functionality while changing the visual appearance
+- Create a simpler, more utilitarian interface
+- Focus more on the text content rather than presentation
+
+#### Implementation
+- Updated `TimelinePage.tsx`:
+  - Changed the title from "Twitter-style Notepad" to "Notepad"
+  - Simplified the header area with a light gray background
+  - Made the textarea look more like a notepad editor
+  - Changed the "Post" button to "Save Note"
+  - Made the controls more compact and simplified
+  - Removed borders around posts and made them flow continuously
+  - Made timestamps and delete buttons smaller and less prominent
+  - Adjusted spacing to be more compact
+- Updated `styles.css`:
+  - Changed the background color to a lighter gray
+  - Reduced font sizes for headings
+  - Changed link color to a more traditional blue
+  - Added a subtle shadow to buttons
+  - Removed borders from inputs and textareas
+  - Added a shadow to the container for a more notepad-like appearance
+- Updated `markdown-styles.css`:
+  - Simplified the styling for markdown elements
+  - Made headings smaller and less prominent
+  - Used dotted borders for headings instead of solid
+  - Reduced spacing between elements
+  - Simplified code blocks and blockquotes
+- Updated `HomePage.tsx`:
+  - Changed the title to "Notepad"
+  - Simplified the layout to match the TimelinePage
+  - Changed the button text from "View Timeline" to "Open Notes"
+
+#### Decisions
+- Kept the current font (not changed to monospace) as requested
+- Maintained all existing functionality while changing only the visual appearance
+- Used a simpler color scheme with lighter grays and traditional blue for links
+- Removed or simplified borders and shadows for a cleaner look
+- Made the interface more compact with less spacing between elements
+- Changed terminology from "Post" to "Note" throughout the interface
+- Kept the markdown functionality but made it less prominent
+
+#### AI Context
+- **UI Design**: Changed from a Twitter-inspired design to a more traditional notepad look
+- **User Experience**: Maintained all functionality while simplifying the visual appearance
+- **Design Principles**: Focused on simplicity, utility, and content over presentation
+- **Related Files**:
+  - [`src/client/pages/tl/TimelinePage.tsx`](./src/client/pages/tl/TimelinePage.tsx) - Updated timeline page layout
+  - [`src/styles.css`](./src/styles.css) - Updated global styles
+  - [`src/client/pages/tl/components/markdown-styles.css`](./src/client/pages/tl/components/markdown-styles.css) - Updated markdown styles
+  - [`src/client/pages/home/HomePage.tsx`](./src/client/pages/home/HomePage.tsx) - Updated home page layout

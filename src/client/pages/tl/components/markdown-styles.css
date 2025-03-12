@@ -1,27 +1,32 @@
 /* Markdown Styles */
 .prose {
-  color: inherit;
+  color: #333333;
   max-width: 100%;
+  font-size: 1rem;
 }
 
 /* Headings */
 .prose h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 500;
   margin-top: 1rem;
   margin-bottom: 0.5rem;
+  border-bottom: 1px dotted #cccccc;
+  padding-bottom: 0.25rem;
 }
 
 .prose h2 {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1.125rem;
+  font-weight: 500;
   margin-top: 1rem;
   margin-bottom: 0.5rem;
+  border-bottom: 1px dotted #cccccc;
+  padding-bottom: 0.25rem;
 }
 
 .prose h3 {
-  font-size: 1.125rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 500;
   margin-top: 1rem;
   margin-bottom: 0.5rem;
 }
@@ -29,14 +34,14 @@
 /* Lists */
 .prose ul {
   list-style-type: disc;
-  padding-left: 1.5rem;
+  padding-left: 1.25rem;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 }
 
 .prose ol {
   list-style-type: decimal;
-  padding-left: 1.5rem;
+  padding-left: 1.25rem;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 }
@@ -48,7 +53,7 @@
 
 /* Links */
 .prose a {
-  color: #3b82f6;
+  color: #0066cc;
   text-decoration: underline;
 }
 
@@ -58,16 +63,17 @@
 
 /* Code */
 .prose code {
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 0.25rem;
+  background-color: #f5f5f5;
+  border: none;
   padding: 0.125rem 0.25rem;
-  font-family: monospace;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.875rem;
 }
 
 .prose pre {
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 0.25rem;
-  padding: 0.75rem;
+  background-color: #f5f5f5;
+  border: none;
+  padding: 0.5rem;
   overflow-x: auto;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
@@ -75,16 +81,18 @@
 
 .prose pre code {
   background-color: transparent;
+  border: none;
   padding: 0;
 }
 
 /* Blockquotes */
 .prose blockquote {
-  border-left: 4px solid #e5e7eb;
-  padding-left: 1rem;
+  border-left: 2px solid #999999;
+  padding-left: 0.75rem;
   font-style: italic;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
+  color: #555555;
 }
 
 /* Tables */
@@ -93,25 +101,33 @@
   border-collapse: collapse;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
+  border: 1px solid #cccccc;
 }
 
 .prose th {
-  background-color: rgba(0, 0, 0, 0.05);
-  font-weight: 600;
+  background-color: #f5f5f5;
+  font-weight: 500;
   text-align: left;
   padding: 0.5rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #cccccc;
 }
 
 .prose td {
   padding: 0.5rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #cccccc;
 }
 
 /* Horizontal Rule */
 .prose hr {
   border: 0;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid #cccccc;
   margin-top: 1rem;
   margin-bottom: 1rem;
+}
+
+/* Paragraph spacing */
+.prose p {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
 }

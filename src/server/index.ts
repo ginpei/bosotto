@@ -12,6 +12,8 @@ let checkInterval: NodeJS.Timeout | null = null;
 const requiredFiles = [
   './dist/src/client/pages/home/index.html',
   './dist/src/client/pages/tl/tl.html',
+  './dist/manifest.json',
+  './dist/sw.js',
 ];
 
 // Function to check if all required build files exist
@@ -58,6 +60,41 @@ if (!buildReady) {
 // API routes can be added here
 app.get('/api/health', (c) => {
   return c.json({ status: 'ok' });
+});
+
+// Serve service worker at the root to ensure proper scope
+app.get('/sw.js', async (c) => {
+  if (!buildReady) {
+    return c.text('// Service worker not available during build');
+  }
+  
+  try {
+    const sw = fs.readFileSync(path.resolve('./dist/sw.js'), 'utf-8');
+    return c.text(sw, 200, {
+      'Content-Type': 'application/javascript',
+      'Service-Worker-Allowed': '/'
+    });
+  } catch (error) {
+    console.error('Error serving service worker:', error);
+    return c.text('// Error loading service worker', 500);
+  }
+});
+
+// Serve manifest.json
+app.get('/manifest.json', async (c) => {
+  if (!buildReady) {
+    return c.json({ error: 'Manifest not available during build' });
+  }
+  
+  try {
+    const manifest = fs.readFileSync(path.resolve('./dist/manifest.json'), 'utf-8');
+    return c.text(manifest, 200, {
+      'Content-Type': 'application/manifest+json'
+    });
+  } catch (error) {
+    console.error('Error serving manifest:', error);
+    return c.json({ error: 'Error loading manifest' }, 500);
+  }
 });
 
 // Specific routes

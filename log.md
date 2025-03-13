@@ -12,6 +12,7 @@
 - [2025-03-07](#2025-03-07-7) - N Key Shortcut for Post Form Focus
 - [2025-03-07](#2025-03-07-8) - Keyboard Event Handler Refactoring
 - [2025-03-12](#2025-03-12-1) - Notepad-Style UI Redesign
+- [2025-03-12](#2025-03-12-2) - Progressive Web App (PWA) Support
 
 ## 2025-03-06 {#2025-03-06-1}
 
@@ -488,3 +489,97 @@ npm install react-markdown remark-gfm rehype-sanitize react-syntax-highlighter @
   - [`src/styles.css`](./src/styles.css) - Updated global styles
   - [`src/client/pages/tl/components/markdown-styles.css`](./src/client/pages/tl/components/markdown-styles.css) - Updated markdown styles
   - [`src/client/pages/home/HomePage.tsx`](./src/client/pages/home/HomePage.tsx) - Updated home page layout
+
+## 2025-03-12 {#2025-03-12-2}
+
+### Progressive Web App (PWA) Support #feature #enhancement
+
+#### Planning
+- Add Progressive Web App (PWA) support to allow users to install the app on their devices
+- Implement offline functionality using service workers
+- Create a web app manifest with app metadata
+- Add necessary icons for various devices
+- Update HTML files with required meta tags and links
+- Configure the server to properly serve PWA assets
+
+#### Implementation
+- Installed necessary packages:
+```bash
+npm install vite-plugin-pwa -D
+```
+- Created PWA assets:
+  - Created `public/manifest.json` with app metadata
+  - Created `public/sw.js` service worker for offline functionality
+  - Added placeholder files for required icons
+  - Created `public/README-PWA.md` with instructions for completing the PWA setup
+- Updated HTML files:
+  - Added meta tags for PWA support to `src/client/pages/home/index.html`
+  - Added meta tags for PWA support to `src/client/pages/tl/tl.html`
+  - Added service worker registration scripts to both HTML files
+- Updated Vite configuration:
+  - Added VitePWA plugin to `vite.config.ts`
+  - Configured manifest details in the plugin options
+- Updated server code:
+  - Added routes to serve the manifest and service worker files
+  - Added proper headers for PWA assets
+  - Updated build detection to include PWA assets
+- Updated documentation:
+  - Added PWA information to the main README.md
+  - Created detailed PWA setup instructions in public/README-PWA.md
+
+#### Decisions
+- Used the vite-plugin-pwa package for seamless integration with Vite
+- Implemented a custom service worker instead of relying solely on the plugin's generated one
+- Created placeholder files for icons with instructions for generating proper icons
+- Added explicit routes in the server for serving PWA assets with proper headers
+- Used a "maskable" purpose for icons to support adaptive icons on Android
+- Set the display mode to "standalone" for a more app-like experience
+- Added comprehensive documentation for testing and troubleshooting PWA functionality
+
+#### Required User Tasks for PWA Completion
+
+To fully enable PWA functionality, the following tasks need to be completed:
+
+1. **Icon Preparation**:
+   - ✅ Create `icon-192x192.png` (192x192 pixels) for Android devices
+   - ✅ Create `icon-512x512.png` (512x512 pixels) for Android devices
+   - ✅ Create `apple-touch-icon.png` (180x180 pixels) for iOS devices
+   - ✅ Create `favicon.ico` for browser tabs (16x16, 32x32, and 48x48 pixels)
+   - Note: Icons should have the app's logo/symbol with the blue background (#3b82f6)
+
+2. **Testing PWA Installation**:
+   - Build the project with `npm run build`
+   - Start the server with `npm run dev:server`
+   - Open Chrome and navigate to `http://localhost:3000`
+   - Open Chrome DevTools (F12) and go to the "Application" tab
+   - Verify the manifest is loaded correctly under "Manifest"
+   - Verify the service worker is registered under "Service Workers"
+   - Test installation by clicking the install icon in the address bar
+   - Test offline functionality by checking "Offline" in the Network tab and reloading
+
+3. **Troubleshooting**:
+   - If icons don't appear, verify they are in the correct location and format
+   - If service worker doesn't register, check browser console for errors
+   - If installation prompt doesn't appear, ensure all PWA criteria are met
+   - Clear browser cache if changes don't take effect
+
+4. **Optional Enhancements**:
+   - Add more icon sizes for better device compatibility
+   - Customize the splash screen for iOS devices
+   - Implement push notifications (requires additional backend setup)
+   - Add more advanced caching strategies in the service worker
+
+#### AI Context
+- **User Experience**: Enhanced the application by allowing installation on devices and offline usage
+- **Performance**: Improved performance through caching strategies in the service worker
+- **Accessibility**: Made the application more accessible by supporting installation across different devices
+- **Documentation**: Provided detailed instructions for completing the PWA setup and testing functionality
+- **Related Files**:
+  - [`public/manifest.json`](./public/manifest.json) - Web app manifest
+  - [`public/sw.js`](./public/sw.js) - Service worker implementation
+  - [`vite.config.ts`](./vite.config.ts) - Updated with PWA plugin
+  - [`src/client/pages/home/index.html`](./src/client/pages/home/index.html) - Updated with PWA meta tags
+  - [`src/client/pages/tl/tl.html`](./src/client/pages/tl/tl.html) - Updated with PWA meta tags
+  - [`src/server/index.ts`](./src/server/index.ts) - Updated to serve PWA assets
+  - [`public/README-PWA.md`](./public/README-PWA.md) - PWA setup instructions
+  - [`README.md`](./README.md) - Updated with PWA information

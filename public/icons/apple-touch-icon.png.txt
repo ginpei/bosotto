@@ -1,0 +1,7 @@
+This is a placeholder for the apple-touch-icon.png file.
+
+Please replace this text file with an actual PNG image file named "apple-touch-icon.png".
+You can use the generate-icons.html file in this directory to create a suitable icon,
+or use any image editing software to create a 180x180 pixel PNG icon.
+
+The icon should be square with rounded corners and should represent your application.

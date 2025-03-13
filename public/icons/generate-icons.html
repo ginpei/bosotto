@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate PWA Icons</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .icon {
+      background-color: #3b82f6;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    .icon-192 {
+      width: 192px;
+      height: 192px;
+      font-size: 96px;
+      border-radius: 48px;
+    }
+    .icon-512 {
+      width: 512px;
+      height: 512px;
+      font-size: 256px;
+      border-radius: 128px;
+    }
+    .instructions {
+      margin-top: 30px;
+      background-color: #f0f0f0;
+      padding: 20px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>PWA Icon Generator</h1>
+  <p>Right-click on each icon and select "Save image as..." to save them as PNG files.</p>
+  
+  <h2>192x192 Icon</h2>
+  <div class="icon icon-192" id="icon192">N</div>
+  
+  <h2>512x512 Icon</h2>
+  <div class="icon icon-512" id="icon512">N</div>
+  
+  <div class="instructions">
+    <h3>Instructions:</h3>
+    <ol>
+      <li>Right-click on each icon above</li>
+      <li>Select "Save image as..."</li>
+      <li>Save the 192x192 icon as "icon-192x192.png" in the public/icons directory</li>
+      <li>Save the 512x512 icon as "icon-512x512.png" in the public/icons directory</li>
+    </ol>
+    <p>Alternatively, you can use any image editing tool to create proper icons and save them with these names in the public/icons directory.</p>
+  </div>
+
+  <script>
+    // This script can be used to convert the divs to canvas elements for easier saving
+    // But for simplicity, we'll just rely on screenshots
+  </script>
+</body>
+</html>

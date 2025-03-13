@@ -1,0 +1,7 @@
+This is a placeholder for the favicon.ico file.
+
+Please replace this text file with an actual ICO file named "favicon.ico".
+You can use any image editing software or online favicon generator to create a suitable favicon.
+
+The favicon should be a small icon (typically 16x16, 32x32, or 48x48 pixels) that represents your application
+and will be displayed in browser tabs and bookmarks.

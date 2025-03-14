@@ -104,14 +104,19 @@ app.use('/*', async (c, next) => {
   return next();
 });
 
-// Fallback route for home
-app.get('*', async (c) => {
+// Home route
+app.get('/', async (c) => {
   if (!buildReady) {
     return c.html(getBuildInProgressHtml());
   }
   
   const html = fs.readFileSync(path.resolve('./dist/src/client/pages/home/index.html'), 'utf-8');
   return c.html(html);
+});
+
+// 404 handler for unknown routes
+app.notFound((c) => {
+  return c.text('404 Not Found', 404);
 });
 
 serve(

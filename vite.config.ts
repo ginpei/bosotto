@@ -39,7 +39,6 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'src/client/pages/home/index.html'),
-        tl: resolve(__dirname, 'src/client/pages/tl/tl.html'),
       },
     },
   },

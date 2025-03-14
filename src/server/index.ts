@@ -11,7 +11,6 @@ let checkInterval: NodeJS.Timeout | null = null;
 // Required build files to check
 const requiredFiles = [
   './dist/src/client/pages/home/index.html',
-  './dist/src/client/pages/tl/tl.html',
   './dist/manifest.json',
   './dist/sw.js',
 ];
@@ -95,20 +94,6 @@ app.get('/manifest.json', async (c) => {
     console.error('Error serving manifest:', error);
     return c.json({ error: 'Error loading manifest' }, 500);
   }
-});
-
-// Specific routes
-app.get('/tl', (c) => {
-  return c.redirect('/tl/');
-});
-
-app.get('/tl/', async (c) => {
-  if (!buildReady) {
-    return c.html(getBuildInProgressHtml());
-  }
-  
-  const html = fs.readFileSync(path.resolve('./dist/src/client/pages/tl/tl.html'), 'utf-8');
-  return c.html(html);
 });
 
 // Conditionally serve static files from the dist directory if build is ready

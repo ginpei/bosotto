@@ -13,6 +13,7 @@
 - [2025-03-07](#2025-03-07-8) - Keyboard Event Handler Refactoring
 - [2025-03-12](#2025-03-12-1) - Notepad-Style UI Redesign
 - [2025-03-12](#2025-03-12-2) - Progressive Web App (PWA) Support
+- [2025-03-19](#2025-03-19-1) - Fix Data Persistence Issue
 
 ## 2025-03-06 {#2025-03-06-1}
 
@@ -583,3 +584,27 @@ To fully enable PWA functionality, the following tasks need to be completed:
   - [`src/server/index.ts`](./src/server/index.ts) - Updated to serve PWA assets
   - [`public/README-PWA.md`](./public/README-PWA.md) - PWA setup instructions
   - [`README.md`](./README.md) - Updated with PWA information
+
+## 2025-03-19 {#2025-03-19-1}
+
+### Fix Data Persistence Issue #bugfix #localStorage
+
+#### Issue Description
+- Notes were being reset when the page was reloaded or reopened
+- The issue was traced to the automatic saving behavior in `useEffect` overwriting localStorage data
+- Debugging logs revealed that an empty array `[]` was being saved to localStorage during component initialization
+
+#### Solution Implementation
+- Removed the automatic saving logic from the `useEffect` hook that was triggered on every post state change
+- Created a dedicated `savePosts` function to explicitly handle saving posts to localStorage
+- Modified the event handlers to call this function only when users explicitly add or delete notes
+- Maintained the existing loading functionality for retrieving posts on component mount
+
+#### Benefits
+- More predictable data persistence behavior
+- Fewer unnecessary localStorage write operations
+- Better user control over data saving
+- Eliminated the bug where posts were being reset
+
+#### Related Files
+- [`src/client/pages/home/HomePage.tsx`](./src/client/pages/home/HomePage.tsx) - Updated saving logic

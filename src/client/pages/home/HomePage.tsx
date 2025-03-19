@@ -29,17 +29,23 @@ const HomePage: React.FC = () => {
   const [showPreview, setShowPreview] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Load posts from localStorage on component mount
   useEffect(() => {
-    const savedPosts = localStorage.getItem('posts');
-    if (savedPosts) {
-      setPosts(JSON.parse(savedPosts));
+    try {
+      console.log('Trying to load posts from localStorage');
+      const savedPosts = localStorage.getItem('posts');
+      console.log('Loaded from localStorage:', savedPosts);
+      if (savedPosts) {
+        setPosts(JSON.parse(savedPosts));
+        console.log('Posts loaded successfully');
+      } else {
+        console.log('No posts found in localStorage');
+      }
+    } catch (error) {
+      console.error('Error loading posts from localStorage:', error);
     }
   }, []);
 
-  // Create a callback for the N key handler
   const handleNKeyPress = useCallback((e: KeyboardEvent) => {
-    // N key is pressed and no input element is currently focused
     if (e.key.toLowerCase() === 'n' && 
         !['INPUT', 'TEXTAREA'].includes((document.activeElement?.tagName || '').toUpperCase())) {
       e.preventDefault();
@@ -47,13 +53,17 @@ const HomePage: React.FC = () => {
     }
   }, []);
 
-  // Use the custom hook for keyboard shortcut
   useKeydown(handleNKeyPress);
 
-  // Save posts to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('posts', JSON.stringify(posts));
-  }, [posts]);
+  const savePosts = useCallback((postsToSave: Post[]) => {
+    try {
+      console.log('Saving posts to localStorage:', postsToSave);
+      localStorage.setItem('posts', JSON.stringify(postsToSave));
+      console.log('Posts saved successfully');
+    } catch (error) {
+      console.error('Error saving posts to localStorage:', error);
+    }
+  }, []);
 
   const handleAddPost = () => {
     if (!newPostContent.trim()) return;
@@ -65,12 +75,16 @@ const HomePage: React.FC = () => {
       updatedAt: new Date().toISOString(),
     };
 
-    setPosts([newPost, ...posts]);
+    const updatedPosts = [newPost, ...posts];
+    setPosts(updatedPosts);
+    savePosts(updatedPosts);
     setNewPostContent('');
   };
 
   const handleDeletePost = (id: string) => {
-    setPosts(posts.filter((post) => post.id !== id));
+    const updatedPosts = posts.filter((post) => post.id !== id);
+    setPosts(updatedPosts);
+    savePosts(updatedPosts);
   };
 
   return (

@@ -12,9 +12,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'robots.txt', 'icons/*.png'],
       manifest: {
-        name: 'Twitter-style Notepad',
+        name: 'Notepad',
         short_name: 'Notepad',
-        description: 'A simple Twitter-style notepad application',
+        description: 'A simple notepad application with markdown support',
         theme_color: '#3b82f6',
         background_color: '#ffffff',
         display: 'standalone',
@@ -35,11 +35,27 @@ export default defineConfig({
       }
     })
   ],
+  server: {
+    port: 3000,
+    strictPort: true,
+    hmr: {
+      protocol: 'ws',
+      port: 3000
+    }
+  },
   build: {
+    outDir: 'dist',
+    emptyOutDir: true,
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'src/client/pages/home/index.html'),
+        main: resolve(__dirname, 'index.html'),
       },
+      output: {
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
+      }
     },
   },
+  publicDir: 'public',
 });

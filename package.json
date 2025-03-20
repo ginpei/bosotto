@@ -9,9 +9,9 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx}\""
   },
   "dependencies": {
+    "@preact/preset-vite": "^2.10.1",
     "@types/react-syntax-highlighter": "^15.5.13",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "preact": "^10.26.4",
     "react-markdown": "^10.0.1",
     "react-syntax-highlighter": "^15.6.1",
     "rehype-sanitize": "^6.0.0",
@@ -22,7 +22,6 @@
     "@types/node": "^20.11.17",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
-    "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",

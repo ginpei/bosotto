@@ -23,16 +23,18 @@ const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, title, children }) => 
     const handleEscape = (e: KeyboardEvent) => {
       if (isOpen && e.key === 'Escape') {
         e.preventDefault(); // Prevent default Escape behavior
+        e.stopPropagation(); // Stop event from bubbling up to other handlers
         onClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
+      // Use capture phase to handle event before other listeners
+      document.addEventListener('keydown', handleEscape, true);
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('keydown', handleEscape, true);
     };
   }, [isOpen, onClose]);
 

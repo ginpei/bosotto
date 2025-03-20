@@ -327,11 +327,12 @@ const HomePage: React.FC = () => {
         <div className="bg-white border-t border-gray-300">
           {posts.map((post, index) => (
             <div key={post.id} className="p-3">
-              <div className="flex justify-between items-center text-xs text-gray-500 mb-1">
+              <div className="flex justify-between text-xs text-gray-500 mb-1">
                 <p>
                   {new Date(post.createdAt).toLocaleString()}
                   {post.updatedAt !== post.createdAt && 
-                    ` (Updated: ${new Date(post.updatedAt).toLocaleString()})`}
+                    <span className="italic ml-1">(edited)</span>
+                  }
                 </p>
                 
                 {editingPostId !== post.id ? (

@@ -45,15 +45,22 @@ const HomePage: React.FC = () => {
     }
   }, []);
 
-  const handleNKeyPress = useCallback((e: KeyboardEvent) => {
+  const handleKeyPress = useCallback((e: KeyboardEvent) => {
+    // 'n' key to focus on textarea (only when not in an input)
     if (e.key.toLowerCase() === 'n' && 
         !['INPUT', 'TEXTAREA'].includes((document.activeElement?.tagName || '').toUpperCase())) {
       e.preventDefault();
       textareaRef.current?.focus();
     }
+    
+    // Ctrl+P/Cmd+P to toggle preview (works anywhere)
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
+      e.preventDefault();
+      setShowPreview(prev => !prev);
+    }
   }, []);
 
-  useKeydown(handleNKeyPress);
+  useKeydown(handleKeyPress);
 
   const savePosts = useCallback((postsToSave: Post[]) => {
     try {
@@ -125,7 +132,7 @@ const HomePage: React.FC = () => {
               <label htmlFor="show-preview" className="text-sm">Preview</label>
               <span className="mx-2 text-gray-400">|</span>
               <span className="text-xs text-gray-500">
-                Markdown: **bold**, *italic*, [links](url), `code` | Ctrl+Enter to save | N to focus
+                Markdown: **bold**, *italic*, [links](url), `code` | Ctrl+Enter to save | N to focus | Ctrl+P to toggle preview
               </span>
             </div>
             

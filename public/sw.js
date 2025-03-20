@@ -1,6 +1,7 @@
 // Service Worker for Twitter-style Notepad PWA
 
-const CACHE_NAME = 'notepad-pwa-v1';
+// Use a cache name with a timestamp that changes on each service worker update
+const CACHE_NAME = 'notepad-pwa-v2-' + Date.now();
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -11,12 +12,12 @@ const ASSETS_TO_CACHE = [
   '/icons/icon-512x512.png'
 ];
 
-// Install event - cache assets
+// Install event - cache essential assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Opened cache');
+        console.log('Opened cache:', CACHE_NAME);
         return cache.addAll(ASSETS_TO_CACHE);
       })
       .then(() => self.skipWaiting())
@@ -31,6 +32,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
+            console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -39,42 +41,41 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch event - serve from cache or network
+// Fetch event - network first, then cache
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request)
+    fetch(event.request.clone())
       .then((response) => {
-        // Cache hit - return response
-        if (response) {
+        // Check if valid response
+        if (!response || response.status !== 200 || response.type !== 'basic') {
           return response;
         }
 
-        // Clone the request
-        const fetchRequest = event.request.clone();
+        // Clone the response
+        const responseToCache = response.clone();
 
-        return fetch(fetchRequest)
-          .then((response) => {
-            // Check if valid response
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
+        // Add to cache
+        caches.open(CACHE_NAME)
+          .then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+
+        return response;
+      })
+      .catch(() => {
+        // Network failed, try to get from cache
+        return caches.match(event.request)
+          .then(cachedResponse => {
+            if (cachedResponse) {
+              return cachedResponse;
             }
-
-            // Clone the response
-            const responseToCache = response.clone();
-
-            // Add to cache
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          })
-          .catch(() => {
-            // If fetch fails, try to return the offline page
+            
+            // If cache fails and it's a navigation, return the offline page
             if (event.request.mode === 'navigate') {
               return caches.match('/');
             }
+            
+            return null;
           });
       })
   );

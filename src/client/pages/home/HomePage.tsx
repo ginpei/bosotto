@@ -28,14 +28,15 @@ interface Post {
 const HomePage: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPostContent, setNewPostContent] = useState('');
-  const [showPreview, setShowPreview] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
   const [showHelpDialog, setShowHelpDialog] = useState(false);
   const [editingPostId, setEditingPostId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
-  const [showEditPreview, setShowEditPreview] = useState(false);
+  const [showEditPreview, setShowEditPreview] = useState(true);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingEditPostId, setPendingEditPostId] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const editTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     try {
@@ -192,6 +193,15 @@ const HomePage: React.FC = () => {
     setEditingPostId(post.id);
     setEditContent(post.content);
     setShowEditPreview(showPreview); // Inherit the current preview state
+    
+    // We need to wait for the component to render with the textarea before we can focus on it
+    // setTimeout allows the focus to happen after the component has rendered
+    setTimeout(() => {
+      if (editTextareaRef.current) {
+        editTextareaRef.current.focus();
+        editTextareaRef.current.select();
+      }
+    }, 0);
   };
   
   const handleConfirmEditSwitch = () => {
@@ -203,6 +213,15 @@ const HomePage: React.FC = () => {
         setEditContent(postToEdit.content);
         setShowEditPreview(showPreview);
         setPendingEditPostId(null);
+        
+        // We need to wait for the component to render with the textarea before we can focus on it
+        // setTimeout allows the focus to happen after the component has rendered
+        setTimeout(() => {
+          if (editTextareaRef.current) {
+            editTextareaRef.current.focus();
+            editTextareaRef.current.select();
+          }
+        }, 0);
       }
     } else {
       // Confirming to discard changes
@@ -429,6 +448,7 @@ const HomePage: React.FC = () => {
                 <div className={`edit-mode edit-form-${post.id}`}>
                   {/* Edit textarea */}
                   <textarea
+                    ref={editTextareaRef}
                     className="w-full p-2 bg-white mb-2 outline-none resize-vertical font-mono border border-gray-200"
                     rows={5}
                     value={editContent}

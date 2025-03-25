@@ -7,6 +7,8 @@ interface ConfirmDialogProps {
   onConfirm: () => void;
   title: string;
   message: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
 }
 
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ 
@@ -14,7 +16,9 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   onClose, 
   onConfirm, 
   title, 
-  message 
+  message,
+  confirmLabel = "OK", 
+  cancelLabel = "Cancel"
 }) => {
   return (
     <Dialog
@@ -29,16 +33,17 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             onClick={onClose}
             className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded"
           >
-            Cancel
+            {cancelLabel}
           </button>
           <button
+            autoFocus
             onClick={() => {
               onConfirm();
               onClose();
             }}
             className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
           >
-            Confirm
+            {confirmLabel}
           </button>
         </div>
       </div>

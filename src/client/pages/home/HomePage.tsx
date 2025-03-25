@@ -269,6 +269,8 @@ const HomePage: React.FC = () => {
           ? "You have unsaved changes to the note you're currently editing. These changes will be lost if you switch. Continue anyway?"
           : "You have unsaved changes. Discard changes and exit edit mode?"
         }
+        confirmLabel={pendingEditPostId ? "Switch & Discard" : "Discard Changes"}
+        cancelLabel={pendingEditPostId ? "Continue Editing" : "Keep Editing"}
       />
       <div className="bg-white">
         <div className="flex items-center p-2 bg-gray-100 border-b border-gray-300">

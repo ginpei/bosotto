@@ -58,7 +58,7 @@ const HelpDialog: React.FC<HelpDialogProps> = ({ isOpen, onClose }) => {
             <li><kbd className="bg-gray-100 px-1 rounded">Ctrl+Enter</kbd> Save note/changes</li>
             <li><kbd className="bg-gray-100 px-1 rounded">N</kbd> Focus on textarea (when not in input)</li>
             <li><kbd className="bg-gray-100 px-1 rounded">Ctrl+P</kbd> Toggle preview</li>
-            <li><kbd className="bg-gray-100 px-1 rounded">Ctrl+H</kbd> Show/hide this help</li>
+            <li><kbd className="bg-gray-100 px-1 rounded">?</kbd> Show/hide this help</li>
             <li><kbd className="bg-gray-100 px-1 rounded">Esc</kbd> Close dialog or cancel editing</li>
           </ul>
         </div>

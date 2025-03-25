@@ -98,8 +98,8 @@ const HomePage: React.FC = () => {
       // Do nothing if focus is elsewhere
     }
 
-    // Ctrl+H/Cmd+H to show help dialog
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'h') {
+    // '?' key to show help dialog
+    if (e.key === '?') {
       e.preventDefault();
       setShowHelpDialog(true);
     }

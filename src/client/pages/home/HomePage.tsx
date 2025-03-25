@@ -55,10 +55,19 @@ const HomePage: React.FC = () => {
 
   // Handle edit cancellation
   const handleEditCancel = useCallback(() => {
-    setEditingPostId(null);
-    setEditContent('');
-    setShowEditPreview(false);
-  }, []);
+    const currentPost = posts.find(p => p.id === editingPostId);
+    // Check if there are unsaved changes
+    if (currentPost && currentPost.content !== editContent) {
+      // Show confirmation dialog for unsaved changes
+      setShowConfirmDialog(true);
+      setPendingEditPostId(null); // We're not switching to another post
+    } else {
+      // No changes, just cancel editing
+      setEditingPostId(null);
+      setEditContent('');
+      setShowEditPreview(false);
+    }
+  }, [editingPostId, editContent, posts]);
 
   const handleKeyPress = useCallback((e: KeyboardEvent) => {
     // Determine active element and context
@@ -186,15 +195,20 @@ const HomePage: React.FC = () => {
   };
   
   const handleConfirmEditSwitch = () => {
-    if (!pendingEditPostId) return;
-    
-    // Start editing the new post after confirmation
-    const postToEdit = posts.find(p => p.id === pendingEditPostId);
-    if (postToEdit) {
-      setEditingPostId(pendingEditPostId);
-      setEditContent(postToEdit.content);
-      setShowEditPreview(showPreview);
-      setPendingEditPostId(null);
+    if (pendingEditPostId) {
+      // Switching to a new post
+      const postToEdit = posts.find(p => p.id === pendingEditPostId);
+      if (postToEdit) {
+        setEditingPostId(pendingEditPostId);
+        setEditContent(postToEdit.content);
+        setShowEditPreview(showPreview);
+        setPendingEditPostId(null);
+      }
+    } else {
+      // Confirming to discard changes
+      setEditingPostId(null);
+      setEditContent('');
+      setShowEditPreview(false);
     }
   };
   
@@ -232,7 +246,10 @@ const HomePage: React.FC = () => {
         onClose={() => setShowConfirmDialog(false)}
         onConfirm={handleConfirmEditSwitch}
         title="Unsaved Changes"
-        message="You have unsaved changes to the note you're currently editing. These changes will be lost if you switch. Continue anyway?"
+        message={pendingEditPostId 
+          ? "You have unsaved changes to the note you're currently editing. These changes will be lost if you switch. Continue anyway?"
+          : "You have unsaved changes. Discard changes and exit edit mode?"
+        }
       />
       <div className="bg-white">
         <div className="flex items-center p-2 bg-gray-100 border-b border-gray-300">

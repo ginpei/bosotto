@@ -104,13 +104,18 @@ const HomePage: React.FC = () => {
       setShowHelpDialog(true);
     }
 
-    // Escape to cancel editing (only when focus is in the edit form)
-    if (e.key === 'Escape' && editingPostId) {
-      if (isInEditForm) {
+    // Escape to cancel editing or blur new post textarea
+    if (e.key === 'Escape') {
+      // Handle edit form first
+      if (editingPostId && isInEditForm) {
         e.preventDefault();
         handleEditCancel();
       }
-      // Only handle Esc if focus is in the edit form
+      // Handle new post form - blur the textarea
+      else if (isInNewPostForm) {
+        e.preventDefault();
+        textareaRef.current?.blur();
+      }
       // Dialog components will handle their own Esc key events
     }
   }, [editingPostId, handleEditCancel, textareaRef]);

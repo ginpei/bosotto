@@ -38,6 +38,17 @@ const HomePage: React.FC = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Function to focus and select text in edit textarea
+  const focusAndSelectEditTextarea = useCallback(() => {
+    // Use a slightly longer timeout to ensure the component is fully rendered
+    setTimeout(() => {
+      if (editTextareaRef.current) {
+        editTextareaRef.current.focus();
+        editTextareaRef.current.select();
+      }
+    }, 10);
+  }, []);
+
   useEffect(() => {
     try {
       console.log('Trying to load posts from localStorage');
@@ -131,6 +142,13 @@ const HomePage: React.FC = () => {
   }, [editingPostId, handleEditCancel, textareaRef]);
 
   useKeydown(handleKeyPress);
+  
+  // Focus on textarea whenever editingPostId changes to a new value
+  useEffect(() => {
+    if (editingPostId) {
+      focusAndSelectEditTextarea();
+    }
+  }, [editingPostId, focusAndSelectEditTextarea]);
 
   const savePosts = useCallback((postsToSave: Post[]) => {
     try {
@@ -194,14 +212,8 @@ const HomePage: React.FC = () => {
     setEditContent(post.content);
     setShowEditPreview(showPreview); // Inherit the current preview state
     
-    // We need to wait for the component to render with the textarea before we can focus on it
-    // setTimeout allows the focus to happen after the component has rendered
-    setTimeout(() => {
-      if (editTextareaRef.current) {
-        editTextareaRef.current.focus();
-        editTextareaRef.current.select();
-      }
-    }, 0);
+    // Focus and select text after the component renders
+    focusAndSelectEditTextarea();
   };
   
   const handleConfirmEditSwitch = () => {
@@ -214,14 +226,8 @@ const HomePage: React.FC = () => {
         setShowEditPreview(showPreview);
         setPendingEditPostId(null);
         
-        // We need to wait for the component to render with the textarea before we can focus on it
-        // setTimeout allows the focus to happen after the component has rendered
-        setTimeout(() => {
-          if (editTextareaRef.current) {
-            editTextareaRef.current.focus();
-            editTextareaRef.current.select();
-          }
-        }, 0);
+        // Focus and select text after the component renders
+        focusAndSelectEditTextarea();
       }
     } else {
       // Confirming to discard changes

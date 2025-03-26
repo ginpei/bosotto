@@ -40,6 +40,8 @@ const HomePage: React.FC = () => {
   const [pendingEditPostId, setPendingEditPostId] = useState<string | null>(null);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [visiblePostIds, setVisiblePostIds] = useState<string[]>([]);
+  const [pendingDeletePostId, setPendingDeletePostId] = useState<string | null>(null);
+  const [showDeleteConfirmDialog, setShowDeleteConfirmDialog] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);
   const postsContainerRef = useRef<HTMLDivElement>(null);
@@ -131,7 +133,7 @@ const HomePage: React.FC = () => {
     
     if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && 
         (isBodyOrPostsContainer || !isInInputField) && 
-        !showHelpDialog && !showConfirmDialog) {
+        !showHelpDialog && !showConfirmDialog && !showDeleteConfirmDialog) {
       e.preventDefault();
       const nonEditingPosts = posts.filter(post => post.id !== editingPostId);
       
@@ -257,7 +259,7 @@ const HomePage: React.FC = () => {
       }
       // Dialog components will handle their own Esc key events
     }
-  }, [editingPostId, handleEditCancel, textareaRef, posts, selectedPostId, showHelpDialog, showConfirmDialog, visiblePostIds]);
+  }, [editingPostId, handleEditCancel, textareaRef, posts, selectedPostId, showHelpDialog, showConfirmDialog, showDeleteConfirmDialog, visiblePostIds]);
 
   useKeydown(handleKeyPress);
   
@@ -389,20 +391,34 @@ const HomePage: React.FC = () => {
     setNewPostContent('');
   };
 
-  const handleDeletePost = (id: string) => {
-    deletePost(id);
+  const handleDeleteClick = (id: string) => {
+    // Set the post to be deleted and show confirmation dialog
+    setPendingDeletePostId(id);
+    setShowDeleteConfirmDialog(true);
+  };
+  
+  const handleConfirmDelete = () => {
+    // Only proceed if we have a valid post ID
+    if (!pendingDeletePostId) return;
+    
+    // Actually delete the post
+    deletePost(pendingDeletePostId);
     
     // If the deleted post was being edited, clear the edit state
-    if (editingPostId === id) {
+    if (editingPostId === pendingDeletePostId) {
       setEditingPostId(null);
       setEditContent('');
       setShowEditPreview(false);
     }
 
     // If the deleted post was selected, deselect it
-    if (selectedPostId === id) {
+    if (selectedPostId === pendingDeletePostId) {
       setSelectedPostId(null);
     }
+    
+    // Close dialog and clear pending delete
+    setShowDeleteConfirmDialog(false);
+    setPendingDeletePostId(null);
   };
   
   const handleEditStart = (post: Post) => {
@@ -491,6 +507,15 @@ const HomePage: React.FC = () => {
         }
         confirmLabel={pendingEditPostId ? "Switch & Discard" : "Discard Changes"}
         cancelLabel={pendingEditPostId ? "Continue Editing" : "Keep Editing"}
+      />
+      <ConfirmDialog
+        isOpen={showDeleteConfirmDialog}
+        onClose={() => setShowDeleteConfirmDialog(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Note"
+        message="Are you sure you want to delete this note? This action cannot be undone."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
       />
       <div className="bg-white">
         <div className="flex items-center p-2 bg-gray-100 border-b border-gray-300">
@@ -639,7 +664,7 @@ const HomePage: React.FC = () => {
                     </button>
                     <button
                       className="text-gray-500 hover:text-red-600"
-                      onClick={() => handleDeletePost(post.id)}
+                      onClick={() => handleDeleteClick(post.id)}
                     >
                       Delete
                     </button>

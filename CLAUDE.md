@@ -1,13 +1,22 @@
 # CLAUDE.md - Development Guide
 
 ## Commands
-- `npm run dev` - Run both client and server in development mode
+- `npm run dev` - Run both client and server in development mode (DO NOT execute this command, ask the user to run it instead)
 - `npm run dev:client` - Run client in watch mode
 - `npm run dev:server` - Run server in watch mode
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
 - `npm run format` - Format code with Prettier
 - `npm run format:check` - Check formatting without modifying files
+
+## Runtime Guidance
+- Never run `npm run dev` directly; ask the user to run it manually
+- When suggesting the user run the app, remind them what to check or test
+- Always plan first and outline what you're going to do
+- Ask for permission before making changes unless explicitly told to "just do it"
+- Explain the reasoning behind your approach
+- Never make git commits automatically; wait for explicit request
+- You may suggest making a commit when appropriate
 
 ## Code Style
 - TypeScript for type safety, with explicit typing

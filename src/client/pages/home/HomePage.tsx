@@ -344,7 +344,7 @@ const HomePage: React.FC = () => {
         {/* Notes list */}
         <div className="bg-white border-t border-gray-300">
           {posts.map((post, index) => (
-            <div key={post.id} className="p-3">
+            <div key={post.id} className="p-3 transition-colors hover:bg-gray-50 group">
               <div className="flex justify-between text-xs text-gray-500 mb-1">
                 <p>
                   {new Date(post.createdAt).toLocaleString()}
@@ -354,7 +354,7 @@ const HomePage: React.FC = () => {
                 </p>
                 
                 {editingPostId !== post.id ? (
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       className="text-gray-500 hover:text-blue-600"
                       onClick={() => handleEditStart(post)}

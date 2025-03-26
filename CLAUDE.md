@@ -17,11 +17,14 @@
 - Explain the reasoning behind your approach
 - Never make git commits automatically; wait for explicit request
 - You may suggest making a commit when appropriate
+- Write commit messages that summarize conceptual changes rather than listing operations
+- After reading a file, inform the user you've read it without repeating its contents
 
 ## Code Style
 - TypeScript for type safety, with explicit typing
 - React functional components with hooks (useState, useEffect, useRef)
 - Custom hooks for reusable logic (useKeydown)
+- Custom hooks MUST return arrays, not objects, to avoid name conflicts (like 'error')
 - PascalCase for components, camelCase for functions/variables
 - 2-space indentation, semicolons, single quotes (Prettier configured)
 - Handler functions prefixed with "handle" (handleSubmit)

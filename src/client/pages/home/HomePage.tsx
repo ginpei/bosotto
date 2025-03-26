@@ -270,76 +270,46 @@ const HomePage: React.FC = () => {
     }
   }, [editingPostId, focusAndSelectEditTextarea]);
 
-  // Setup Intersection Observer to track visible posts
-  useEffect(() => {
-    if (!postsContainerRef.current) return;
-    
-    // Create a new IntersectionObserver
-    const observer = new IntersectionObserver(
-      (entries) => {
-        // Process entries to update visible posts
-        entries.forEach(entry => {
-          const postId = entry.target.getAttribute('data-post-id');
-          if (!postId) return;
-          
-          setVisiblePostIds(prev => {
-            if (entry.isIntersecting) {
-              // Add postId if not already in the array
-              if (!prev.includes(postId)) {
-                return [...prev, postId];
-              }
-            } else {
-              // Remove postId if it's in the array
-              return prev.filter(id => id !== postId);
-            }
-            return prev;
-          });
-        });
-      },
-      {
-        root: null, // viewport
-        rootMargin: '0px',
-        threshold: 0.5 // At least 50% of the post must be visible
-      }
-    );
-    
-    // Observe all post elements
-    // We'll connect the actual elements in the render function
-    
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-  
   // Store the observer for use in component
   const observerRef = useRef<IntersectionObserver | null>(null);
   
-  // Update observer reference when it's created
+  // Setup Intersection Observer to track visible posts
   useEffect(() => {
-    if (!postsContainerRef.current) return;
-    
+    // Create a new IntersectionObserver
     observerRef.current = new IntersectionObserver(
       (entries) => {
-        entries.forEach(entry => {
-          const postId = entry.target.getAttribute('data-post-id');
-          if (!postId) return;
+        // Use a single state update to avoid multiple re-renders
+        setVisiblePostIds(prev => {
+          let updated = [...prev];
+          let hasChanges = false;
           
-          setVisiblePostIds(prev => {
+          // Process all entries
+          entries.forEach(entry => {
+            const postId = entry.target.getAttribute('data-post-id');
+            if (!postId) return;
+            
             if (entry.isIntersecting) {
-              // Add postId if not already in the array
-              if (!prev.includes(postId)) {
-                return [...prev, postId];
+              // Add to visible list if not already included
+              if (!updated.includes(postId)) {
+                updated.push(postId);
+                hasChanges = true;
               }
             } else {
-              // Remove postId if it's in the array
-              return prev.filter(id => id !== postId);
+              // Remove from visible list
+              const index = updated.indexOf(postId);
+              if (index !== -1) {
+                updated.splice(index, 1);
+                hasChanges = true;
+              }
             }
-            return prev;
           });
+          
+          // Only return a new array if there were changes
+          return hasChanges ? updated : prev;
         });
       },
       {
-        root: null,
+        root: null, // Use viewport as root
         rootMargin: '0px',
         threshold: 0.1 // Even a small part visible counts
       }
@@ -351,17 +321,32 @@ const HomePage: React.FC = () => {
         observerRef.current.disconnect();
       }
     };
-  }, []);
+  }, []); // Empty dependency array - only run once
   
   // Function to register a post element with the observer
   const registerPostRef = useCallback((postId: string, element: HTMLDivElement | null) => {
-    if (!element || !observerRef.current) return;
+    if (!element) return;
     
-    // Save ref to the element
-    postRefs.current.set(postId, element);
+    // Wait for observer to be initialized
+    if (!observerRef.current) {
+      // If observer not ready, retry after a short delay
+      setTimeout(() => registerPostRef(postId, element), 0);
+      return;
+    }
     
     // Start observing this element
     observerRef.current.observe(element);
+    
+    // Return cleanup function for when component unmounts
+    return () => {
+      if (observerRef.current) {
+        try {
+          observerRef.current.unobserve(element);
+        } catch (e) {
+          // Ignore errors if element no longer exists
+        }
+      }
+    };
   }, []);
 
   // Add global click handler to deselect post when clicking outside post items

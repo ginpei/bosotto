@@ -39,9 +39,11 @@ const HomePage: React.FC = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingEditPostId, setPendingEditPostId] = useState<string | null>(null);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [visiblePostIds, setVisiblePostIds] = useState<string[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);
   const postsContainerRef = useRef<HTMLDivElement>(null);
+  const postRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   // Function to focus and select text in edit textarea
   const focusAndSelectEditTextarea = useCallback(() => {
@@ -136,18 +138,75 @@ const HomePage: React.FC = () => {
       // If there are no posts to navigate to, keep the current selection
       if (nonEditingPosts.length === 0) return;
       
+      // Get the currently visible posts
+      const visibleNonEditingPosts = nonEditingPosts.filter(post => 
+        visiblePostIds.includes(post.id)
+      );
+      
+      // Case 1: No post is selected yet
       if (selectedPostId === null) {
-        // No post selected yet, select first or last based on key
-        if (e.key === 'ArrowUp') {
-          // Select first (top) post
-          setSelectedPostId(nonEditingPosts[0].id);
+        if (visibleNonEditingPosts.length > 0) {
+          // Always select first (top) visible post regardless of key
+          const postToSelect = visibleNonEditingPosts[0]; // First visible
+          
+          setSelectedPostId(postToSelect.id);
+          
+          // Scroll into view
+          setTimeout(() => {
+            const selectedElement = document.querySelector(`[data-post-id="${postToSelect.id}"]`);
+            if (selectedElement) {
+              selectedElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+          }, 10);
+          
+          return;
         } else {
-          // Select last (bottom) post
-          setSelectedPostId(nonEditingPosts[nonEditingPosts.length - 1].id);
+          // No visible posts, fall back to selecting first/last post
+          const postIdToSelect = e.key === 'ArrowUp' 
+            ? nonEditingPosts[0].id
+            : nonEditingPosts[nonEditingPosts.length - 1].id;
+            
+          setSelectedPostId(postIdToSelect);
+          
+          // Scroll into view
+          setTimeout(() => {
+            const selectedElement = document.querySelector(`[data-post-id="${postIdToSelect}"]`);
+            if (selectedElement) {
+              selectedElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+          }, 10);
+          
+          return;
         }
-        return;
       }
       
+      // Case 2: A post is selected but not visible
+      const isSelectedPostVisible = visiblePostIds.includes(selectedPostId);
+      if (!isSelectedPostVisible) {
+        if (visibleNonEditingPosts.length > 0) {
+          // Always select first (top) visible post regardless of key
+          const postToSelect = visibleNonEditingPosts[0]; // First visible
+          
+          setSelectedPostId(postToSelect.id);
+          
+          // Scroll into view
+          setTimeout(() => {
+            const selectedElement = document.querySelector(`[data-post-id="${postToSelect.id}"]`);
+            if (selectedElement) {
+              selectedElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+          }, 10);
+          
+          return;
+        } else {
+          // If no posts are visible and we have a selection, keep the selection
+          return;
+        }
+      }
+      
+      // Case 3: A post is selected and visible - use normal navigation
+      
+      // Normal post navigation when a post is already selected and visible
       // Find the current index
       const currentIndex = nonEditingPosts.findIndex(post => post.id === selectedPostId);
       if (currentIndex === -1) {
@@ -198,7 +257,7 @@ const HomePage: React.FC = () => {
       }
       // Dialog components will handle their own Esc key events
     }
-  }, [editingPostId, handleEditCancel, textareaRef, posts, selectedPostId, showHelpDialog, showConfirmDialog]);
+  }, [editingPostId, handleEditCancel, textareaRef, posts, selectedPostId, showHelpDialog, showConfirmDialog, visiblePostIds]);
 
   useKeydown(handleKeyPress);
   
@@ -208,6 +267,100 @@ const HomePage: React.FC = () => {
       focusAndSelectEditTextarea();
     }
   }, [editingPostId, focusAndSelectEditTextarea]);
+
+  // Setup Intersection Observer to track visible posts
+  useEffect(() => {
+    if (!postsContainerRef.current) return;
+    
+    // Create a new IntersectionObserver
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Process entries to update visible posts
+        entries.forEach(entry => {
+          const postId = entry.target.getAttribute('data-post-id');
+          if (!postId) return;
+          
+          setVisiblePostIds(prev => {
+            if (entry.isIntersecting) {
+              // Add postId if not already in the array
+              if (!prev.includes(postId)) {
+                return [...prev, postId];
+              }
+            } else {
+              // Remove postId if it's in the array
+              return prev.filter(id => id !== postId);
+            }
+            return prev;
+          });
+        });
+      },
+      {
+        root: null, // viewport
+        rootMargin: '0px',
+        threshold: 0.5 // At least 50% of the post must be visible
+      }
+    );
+    
+    // Observe all post elements
+    // We'll connect the actual elements in the render function
+    
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+  
+  // Store the observer for use in component
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  
+  // Update observer reference when it's created
+  useEffect(() => {
+    if (!postsContainerRef.current) return;
+    
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          const postId = entry.target.getAttribute('data-post-id');
+          if (!postId) return;
+          
+          setVisiblePostIds(prev => {
+            if (entry.isIntersecting) {
+              // Add postId if not already in the array
+              if (!prev.includes(postId)) {
+                return [...prev, postId];
+              }
+            } else {
+              // Remove postId if it's in the array
+              return prev.filter(id => id !== postId);
+            }
+            return prev;
+          });
+        });
+      },
+      {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1 // Even a small part visible counts
+      }
+    );
+    
+    // Clean up observer on unmount
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, []);
+  
+  // Function to register a post element with the observer
+  const registerPostRef = useCallback((postId: string, element: HTMLDivElement | null) => {
+    if (!element || !observerRef.current) return;
+    
+    // Save ref to the element
+    postRefs.current.set(postId, element);
+    
+    // Start observing this element
+    observerRef.current.observe(element);
+  }, []);
 
   // Add global click handler to deselect post when clicking outside post items
   useEffect(() => {
@@ -447,6 +600,7 @@ const HomePage: React.FC = () => {
           {posts.map((post, index) => (
             <div 
               key={post.id}
+              ref={(element) => registerPostRef(post.id, element)}
               data-post-item="true"
               data-post-id={post.id}
               className={`p-3 transition-colors hover:bg-gray-50 group ${

@@ -38,8 +38,10 @@ const HomePage: React.FC = () => {
   const [showEditPreview, setShowEditPreview] = useState(true);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingEditPostId, setPendingEditPostId] = useState<string | null>(null);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const postsContainerRef = useRef<HTMLDivElement>(null);
 
   // Function to focus and select text in edit textarea
   const focusAndSelectEditTextarea = useCallback(() => {
@@ -118,7 +120,66 @@ const HomePage: React.FC = () => {
       setShowHelpDialog(true);
     }
 
-    // Escape to cancel editing or blur new post textarea
+    // Up/Down arrow keys to navigate between posts
+    // Allow navigation when document.body or postsContainerRef has focus (not input fields)
+    const target = e.target as HTMLElement;
+    const isBodyOrPostsContainer = target === document.body || 
+                                   target === postsContainerRef.current ||
+                                   postsContainerRef.current?.contains(target);
+    
+    if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && 
+        (isBodyOrPostsContainer || !isInInputField) && 
+        !showHelpDialog && !showConfirmDialog) {
+      e.preventDefault();
+      const nonEditingPosts = posts.filter(post => post.id !== editingPostId);
+      
+      // If there are no posts to navigate to, keep the current selection
+      if (nonEditingPosts.length === 0) return;
+      
+      if (selectedPostId === null) {
+        // No post selected yet, select first or last based on key
+        if (e.key === 'ArrowUp') {
+          // Select first (top) post
+          setSelectedPostId(nonEditingPosts[0].id);
+        } else {
+          // Select last (bottom) post
+          setSelectedPostId(nonEditingPosts[nonEditingPosts.length - 1].id);
+        }
+        return;
+      }
+      
+      // Find the current index
+      const currentIndex = nonEditingPosts.findIndex(post => post.id === selectedPostId);
+      if (currentIndex === -1) {
+        // Selected post not found (might have been deleted), select first post
+        setSelectedPostId(nonEditingPosts[0].id);
+        return;
+      }
+      
+      // Calculate the next index based on direction
+      let nextIndex;
+      if (e.key === 'ArrowUp') {
+        // If already at the first post and pressing up, stay at the first post
+        nextIndex = currentIndex > 0 ? currentIndex - 1 : currentIndex;
+      } else {
+        // If already at the last post and pressing down, stay at the last post
+        nextIndex = currentIndex < nonEditingPosts.length - 1 ? currentIndex + 1 : currentIndex;
+      }
+      
+      // Set the selected post ID
+      const newSelectedId = nonEditingPosts[nextIndex].id;
+      setSelectedPostId(newSelectedId);
+      
+      // Scroll the selected post into view after a short delay to allow rendering
+      setTimeout(() => {
+        const selectedElement = document.querySelector(`[data-post-id="${newSelectedId}"]`);
+        if (selectedElement) {
+          selectedElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }, 10);
+    }
+
+    // Escape to cancel editing or blur new post textarea or deselect post
     if (e.key === 'Escape') {
       // Handle edit form first
       if (editingPostId && isInEditForm) {
@@ -130,9 +191,14 @@ const HomePage: React.FC = () => {
         e.preventDefault();
         textareaRef.current?.blur();
       }
+      // Deselect post if one is selected
+      else if (selectedPostId !== null && !showHelpDialog && !showConfirmDialog) {
+        e.preventDefault();
+        setSelectedPostId(null);
+      }
       // Dialog components will handle their own Esc key events
     }
-  }, [editingPostId, handleEditCancel, textareaRef]);
+  }, [editingPostId, handleEditCancel, textareaRef, posts, selectedPostId, showHelpDialog, showConfirmDialog]);
 
   useKeydown(handleKeyPress);
   
@@ -142,6 +208,27 @@ const HomePage: React.FC = () => {
       focusAndSelectEditTextarea();
     }
   }, [editingPostId, focusAndSelectEditTextarea]);
+
+  // Add global click handler to deselect post when clicking outside post items
+  useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      // Get the target element
+      const target = e.target as HTMLElement;
+      
+      // Find the closest post item (if any)
+      const clickedPostItem = target.closest('[data-post-item="true"]');
+      
+      // If the click wasn't on a post item and not in a dialog, deselect
+      if (!clickedPostItem && !target.closest('dialog')) {
+        setSelectedPostId(null);
+      }
+    };
+    
+    document.addEventListener('click', handleGlobalClick);
+    return () => {
+      document.removeEventListener('click', handleGlobalClick);
+    };
+  }, []);
 
   const handleAddPost = () => {
     if (!newPostContent.trim()) return;
@@ -157,6 +244,11 @@ const HomePage: React.FC = () => {
       setEditingPostId(null);
       setEditContent('');
       setShowEditPreview(false);
+    }
+
+    // If the deleted post was selected, deselect it
+    if (selectedPostId === id) {
+      setSelectedPostId(null);
     }
   };
   
@@ -342,9 +434,37 @@ const HomePage: React.FC = () => {
         </div>
 
         {/* Notes list */}
-        <div className="bg-white border-t border-gray-300">
+        <div 
+          className="bg-white border-t border-gray-300" 
+          ref={postsContainerRef}
+          onClick={(e) => {
+            // Only deselect if clicking directly on the container, not on a post
+            if (e.target === e.currentTarget) {
+              setSelectedPostId(null);
+            }
+          }}
+        >
           {posts.map((post, index) => (
-            <div key={post.id} className="p-3 transition-colors hover:bg-gray-50 group">
+            <div 
+              key={post.id}
+              data-post-item="true"
+              data-post-id={post.id}
+              className={`p-3 transition-colors hover:bg-gray-50 group ${
+                selectedPostId === post.id 
+                  ? 'bg-gray-50 border-l-2 border-gray-400' 
+                  : ''
+              }`}
+              onClick={() => {
+                setSelectedPostId(post.id);
+                // Also scroll this element into view when clicked
+                setTimeout(() => {
+                  const selectedElement = document.querySelector(`[data-post-id="${post.id}"]`);
+                  if (selectedElement) {
+                    selectedElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                  }
+                }, 10);
+              }}
+            >
               <div className="flex justify-between text-xs text-gray-500 mb-1">
                 <p>
                   {new Date(post.createdAt).toLocaleString()}
@@ -354,7 +474,9 @@ const HomePage: React.FC = () => {
                 </p>
                 
                 {editingPostId !== post.id ? (
-                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className={`flex gap-2 transition-opacity ${
+                    selectedPostId === post.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                  }`}>
                     <button
                       className="text-gray-500 hover:text-blue-600"
                       onClick={() => handleEditStart(post)}

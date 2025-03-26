@@ -114,8 +114,8 @@ const HomePage: React.FC = () => {
       // Do nothing if focus is elsewhere
     }
 
-    // '?' key to show help dialog
-    if (e.key === '?') {
+    // '?' key to show help dialog (only when not in text input)
+    if (e.key === '?' && !isInInputField) {
       e.preventDefault();
       setShowHelpDialog(true);
     }

@@ -8,6 +8,8 @@ import './components/markdown-styles.css';
 import useKeydown from '../../shared/hooks/useKeydown';
 import HelpDialog from './components/HelpDialog';
 import ConfirmDialog from './components/ConfirmDialog';
+import { usePosts } from '../../shared/persistence/persistenceHooks';
+import { Post } from '../../shared/persistence/entryTypes';
 
 // Define a type for the code component props
 interface CodeProps {
@@ -18,15 +20,16 @@ interface CodeProps {
   [key: string]: any;
 }
 
-interface Post {
-  id: string;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 const HomePage: React.FC = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [
+    posts, 
+    isLoading, 
+    error, 
+    addPost, 
+    updatePost, 
+    deletePost
+  ] = usePosts();
+  
   const [newPostContent, setNewPostContent] = useState('');
   const [showPreview, setShowPreview] = useState(true);
   const [showHelpDialog, setShowHelpDialog] = useState(false);
@@ -50,20 +53,10 @@ const HomePage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    try {
-      console.log('Trying to load posts from localStorage');
-      const savedPosts = localStorage.getItem('posts');
-      console.log('Loaded from localStorage:', savedPosts);
-      if (savedPosts) {
-        setPosts(JSON.parse(savedPosts));
-        console.log('Posts loaded successfully');
-      } else {
-        console.log('No posts found in localStorage');
-      }
-    } catch (error) {
-      console.error('Error loading posts from localStorage:', error);
+    if (error) {
+      console.error('Error loading posts:', error);
     }
-  }, []);
+  }, [error]);
 
   // Handle edit cancellation
   const handleEditCancel = useCallback(() => {
@@ -150,36 +143,14 @@ const HomePage: React.FC = () => {
     }
   }, [editingPostId, focusAndSelectEditTextarea]);
 
-  const savePosts = useCallback((postsToSave: Post[]) => {
-    try {
-      console.log('Saving posts to localStorage:', postsToSave);
-      localStorage.setItem('posts', JSON.stringify(postsToSave));
-      console.log('Posts saved successfully');
-    } catch (error) {
-      console.error('Error saving posts to localStorage:', error);
-    }
-  }, []);
-
   const handleAddPost = () => {
     if (!newPostContent.trim()) return;
-
-    const newPost: Post = {
-      id: Date.now().toString(),
-      content: newPostContent,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    const updatedPosts = [newPost, ...posts];
-    setPosts(updatedPosts);
-    savePosts(updatedPosts);
+    addPost(newPostContent);
     setNewPostContent('');
   };
 
   const handleDeletePost = (id: string) => {
-    const updatedPosts = posts.filter((post) => post.id !== id);
-    setPosts(updatedPosts);
-    savePosts(updatedPosts);
+    deletePost(id);
     
     // If the deleted post was being edited, clear the edit state
     if (editingPostId === id) {
@@ -240,25 +211,23 @@ const HomePage: React.FC = () => {
   const handleEditSave = () => {
     if (!editingPostId || !editContent.trim()) return;
     
-    const updatedPosts = posts.map(post => {
-      if (post.id === editingPostId) {
-        return {
-          ...post,
-          content: editContent,
-          updatedAt: new Date().toISOString()
-        };
-      }
-      return post;
-    });
-    
-    setPosts(updatedPosts);
-    savePosts(updatedPosts);
+    updatePost(editingPostId, editContent);
     
     // Clear edit state
     setEditingPostId(null);
     setEditContent('');
     setShowEditPreview(false);
   };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-2 py-4 max-w-3xl">
+        <div className="text-center p-6">
+          <p>Loading your notes...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-2 py-4 max-w-3xl">

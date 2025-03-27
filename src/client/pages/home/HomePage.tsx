@@ -139,8 +139,10 @@ const HomePage: React.FC = () => {
                                    target === postsContainerRef.current ||
                                    postsContainerRef.current?.contains(target);
     
+    // Skip arrow key navigation when in any input field or specifically in text areas within edit forms
     if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && 
         (isBodyOrPostsContainer || !isInInputField) && 
+        !isInEditForm && !isInNewPostForm && 
         !showHelpDialog && !showConfirmDialog && !showDeleteConfirmDialog) {
       e.preventDefault();
       

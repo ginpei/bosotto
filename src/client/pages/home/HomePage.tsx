@@ -88,6 +88,18 @@ const HomePage: React.FC = () => {
     }
   }, [editingPostId, editContent, posts]);
 
+  // Create refs to hold the handler functions
+  const handleEditStartRef = useRef<(post: Post) => void>(() => {});
+  const handleDeleteClickRef = useRef<(id: string) => void>(() => {});
+  
+  // Implement the delete handler
+  const handleDeleteClick = useCallback((id: string) => {
+    // Set the post to be deleted and show confirmation dialog
+    setPendingDeletePostId(id);
+    setShowDeleteConfirmDialog(true);
+  }, [setPendingDeletePostId, setShowDeleteConfirmDialog]);
+
+  // Key press handler first, which references handleEditStart
   const handleKeyPress = useCallback((e: KeyboardEvent) => {
     // Determine active element and context
     const activeElement = document.activeElement;
@@ -130,6 +142,24 @@ const HomePage: React.FC = () => {
     if (e.key === '?' && !isInInputField) {
       e.preventDefault();
       setShowHelpDialog(true);
+    }
+    
+    // 'e' key to edit currently selected post (when not in input field and a post is selected)
+    if (e.key.toLowerCase() === 'e' && !isInInputField && selectedPostId && !isInEditForm && !showHelpDialog && !showConfirmDialog && !showDeleteConfirmDialog) {
+      e.preventDefault();
+      const selectedPost = posts.find(post => post.id === selectedPostId);
+      if (selectedPost) {
+        handleEditStartRef.current(selectedPost);
+      }
+    }
+    
+    // 'Delete' or 'Backspace' key to delete currently selected post (when not in input field and a post is selected)
+    const isDeleteKey = e.key === 'Delete' || e.key === 'Backspace';
+    const isMacDelete = e.key === 'Backspace' && e.metaKey; // Common Mac deletion pattern
+    
+    if ((isDeleteKey || isMacDelete) && !isInInputField && selectedPostId && !isInEditForm && !showHelpDialog && !showConfirmDialog && !showDeleteConfirmDialog) {
+      e.preventDefault();
+      handleDeleteClickRef.current(selectedPostId);
     }
 
     // Up/Down arrow keys to navigate between posts
@@ -422,6 +452,41 @@ const HomePage: React.FC = () => {
     }
   }, [editingPostId, handleEditCancel, textareaRef, posts, selectedPostId, showHelpDialog, showConfirmDialog, showDeleteConfirmDialog, visiblePostIds]);
 
+  // Implement the actual edit start handler
+  const handleEditStart = useCallback((post: Post) => {
+    // If already editing another post
+    if (editingPostId && editingPostId !== post.id) {
+      // Get the post currently being edited to check for changes
+      const currentEditPost = posts.find(p => p.id === editingPostId);
+      
+      // Check if there are unsaved changes
+      const hasUnsavedChanges = currentEditPost && currentEditPost.content !== editContent;
+      
+      if (hasUnsavedChanges) {
+        // Only show confirmation if there are unsaved changes
+        setPendingEditPostId(post.id);
+        setShowConfirmDialog(true);
+        return;
+      }
+      // Otherwise, just switch to editing the new post without confirmation
+    }
+    
+    // Start editing immediately
+    setEditingPostId(post.id);
+    setEditContent(post.content);
+    setShowEditPreview(showPreview); // Inherit the current preview state
+    
+    // Focus and select text after the component renders
+    focusAndSelectEditTextarea();
+  }, [editingPostId, editContent, posts, setPendingEditPostId, setShowConfirmDialog, setEditingPostId, setEditContent, showPreview, setShowEditPreview, focusAndSelectEditTextarea]);
+
+  // Assign the handlers to our refs so they can be accessed from anywhere
+  useEffect(() => {
+    handleEditStartRef.current = handleEditStart;
+    handleDeleteClickRef.current = handleDeleteClick;
+    console.log('Handler functions assigned to refs', handleEditStart, handleDeleteClick);
+  }, [handleEditStart, handleDeleteClick]);
+
   useKeydown(handleKeyPress);
   
   // Focus on textarea whenever editingPostId changes to a new value
@@ -536,12 +601,6 @@ const HomePage: React.FC = () => {
     addPost(newPostContent);
     setNewPostContent('');
   };
-
-  const handleDeleteClick = (id: string) => {
-    // Set the post to be deleted and show confirmation dialog
-    setPendingDeletePostId(id);
-    setShowDeleteConfirmDialog(true);
-  };
   
   const handleConfirmDelete = () => {
     // Only proceed if we have a valid post ID
@@ -565,33 +624,6 @@ const HomePage: React.FC = () => {
     // Close dialog and clear pending delete
     setShowDeleteConfirmDialog(false);
     setPendingDeletePostId(null);
-  };
-  
-  const handleEditStart = (post: Post) => {
-    // If already editing another post
-    if (editingPostId && editingPostId !== post.id) {
-      // Get the post currently being edited to check for changes
-      const currentEditPost = posts.find(p => p.id === editingPostId);
-      
-      // Check if there are unsaved changes
-      const hasUnsavedChanges = currentEditPost && currentEditPost.content !== editContent;
-      
-      if (hasUnsavedChanges) {
-        // Only show confirmation if there are unsaved changes
-        setPendingEditPostId(post.id);
-        setShowConfirmDialog(true);
-        return;
-      }
-      // Otherwise, just switch to editing the new post without confirmation
-    }
-    
-    // Start editing immediately
-    setEditingPostId(post.id);
-    setEditContent(post.content);
-    setShowEditPreview(showPreview); // Inherit the current preview state
-    
-    // Focus and select text after the component renders
-    focusAndSelectEditTextarea();
   };
   
   const handleConfirmEditSwitch = () => {
@@ -822,13 +854,13 @@ const HomePage: React.FC = () => {
                   }`}>
                     <button
                       className="text-gray-500 hover:text-blue-600"
-                      onClick={() => handleEditStart(post)}
+                      onClick={() => handleEditStartRef.current(post)}
                     >
                       Edit
                     </button>
                     <button
                       className="text-gray-500 hover:text-red-600"
-                      onClick={() => handleDeleteClick(post.id)}
+                      onClick={() => handleDeleteClickRef.current(post.id)}
                     >
                       Delete
                     </button>

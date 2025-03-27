@@ -57,8 +57,12 @@ const HelpDialog: React.FC<HelpDialogProps> = ({ isOpen, onClose }) => {
           <ul className="space-y-1">
             <li><kbd className="bg-gray-100 px-1 rounded">Ctrl+Enter</kbd> Save note/changes</li>
             <li><kbd className="bg-gray-100 px-1 rounded">N</kbd> Focus on textarea (when not in input)</li>
-            <li><kbd className="bg-gray-100 px-1 rounded">Ctrl+P</kbd> Toggle preview</li>
+            <li><kbd className="bg-gray-100 px-1 rounded">Ctrl+P</kbd> / <kbd className="bg-gray-100 px-1 rounded">⌘+P</kbd> Toggle preview</li>
             <li><kbd className="bg-gray-100 px-1 rounded">?</kbd> Show/hide this help</li>
+            <li><kbd className="bg-gray-100 px-1 rounded">E</kbd> Edit selected note</li>
+            <li><kbd className="bg-gray-100 px-1 rounded">Delete</kbd> / <kbd className="bg-gray-100 px-1 rounded">Backspace</kbd> Delete selected note</li>
+            <li><kbd className="bg-gray-100 px-1 rounded">↑</kbd> / <kbd className="bg-gray-100 px-1 rounded">↓</kbd> Navigate between notes</li>
+            <li><kbd className="bg-gray-100 px-1 rounded">Esc</kbd> Cancel edit / Deselect note</li>
           </ul>
         </div>
       </div>

@@ -21,9 +21,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'robots.txt', 'icons/*.png'],
       manifest: {
-        name: 'Notepad',
-        short_name: 'Notepad',
-        description: 'A simple notepad application with markdown support',
+        name: 'Bosotto',
+        short_name: 'Bosotto',
+        description: 'A simple note-taking application with markdown support',
         theme_color: '#3b82f6',
         background_color: '#ffffff',
         display: 'standalone',

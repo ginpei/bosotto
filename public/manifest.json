@@ -1,7 +1,7 @@
 {
-  "name": "Twitter-style Notepad",
-  "short_name": "Notepad",
-  "description": "A simple Twitter-style notepad application",
+  "name": "Bosotto",
+  "short_name": "Bosotto",
+  "description": "A simple note-taking application",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

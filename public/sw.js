@@ -1,7 +1,7 @@
-// Service Worker for Twitter-style Notepad PWA
+// Service Worker for Bosotto PWA
 
 // Use a cache name with a timestamp that changes on each service worker update
-const CACHE_NAME = 'notepad-pwa-v2-' + Date.now();
+const CACHE_NAME = 'bosotto-pwa-v2-' + Date.now();
 // Get the base path for the app (in GitHub Pages it will be '/bosotto/')
 const BASE_PATH = location.pathname.includes('/bosotto/') ? '/bosotto/' : '/';
 

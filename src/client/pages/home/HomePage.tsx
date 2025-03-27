@@ -714,7 +714,7 @@ const HomePage: React.FC = () => {
       />
       <div className="bg-white">
         <div className="flex items-center p-2 bg-gray-100 border-b border-gray-300">
-          <h1 className="text-lg">Notepad</h1>
+          <h1 className="text-lg">Bosotto</h1>
         </div>
 
         {/* Post form */}

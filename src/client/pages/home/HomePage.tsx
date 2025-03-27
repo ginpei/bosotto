@@ -490,7 +490,6 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     handleEditStartRef.current = handleEditStart;
     handleDeleteClickRef.current = handleDeleteClick;
-    console.log('Handler functions assigned to refs', handleEditStart, handleDeleteClick);
   }, [handleEditStart, handleDeleteClick]);
 
   useKeydown(handleKeyPress);

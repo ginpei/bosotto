@@ -2,14 +2,15 @@
 
 // Use a cache name with a timestamp that changes on each service worker update
 const CACHE_NAME = 'notepad-pwa-v2-' + Date.now();
+// Get the base path for the app (in GitHub Pages it will be '/bosotto/')
+const BASE_PATH = location.pathname.includes('/bosotto/') ? '/bosotto/' : '/';
+
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/tl/',
-  '/tl/index.html',
-  '/manifest.json',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+  BASE_PATH,
+  BASE_PATH + 'index.html',
+  BASE_PATH + 'manifest.json',
+  BASE_PATH + 'icons/icon-192x192.png',
+  BASE_PATH + 'icons/icon-512x512.png'
 ];
 
 // Install event - cache essential assets
@@ -72,7 +73,7 @@ self.addEventListener('fetch', (event) => {
             
             // If cache fails and it's a navigation, return the offline page
             if (event.request.mode === 'navigate') {
-              return caches.match('/');
+              return caches.match(BASE_PATH);
             }
             
             return null;

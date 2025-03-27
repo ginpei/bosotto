@@ -82,9 +82,15 @@ const HomePage: React.FC = () => {
       setPendingEditPostId(null); // We're not switching to another post
     } else {
       // No changes, just cancel editing
+      const postIdToSelect = editingPostId;
       setEditingPostId(null);
       setEditContent('');
       setShowEditPreview(false);
+      
+      // Select the post after canceling edit
+      if (postIdToSelect) {
+        setSelectedPostId(postIdToSelect);
+      }
     }
   }, [editingPostId, editContent, posts]);
 
@@ -641,9 +647,15 @@ const HomePage: React.FC = () => {
       }
     } else {
       // Confirming to discard changes
+      const postIdToSelect = editingPostId;
       setEditingPostId(null);
       setEditContent('');
       setShowEditPreview(false);
+      
+      // Select the post after canceling edit with confirmation
+      if (postIdToSelect) {
+        setSelectedPostId(postIdToSelect);
+      }
     }
   };
   
@@ -652,10 +664,16 @@ const HomePage: React.FC = () => {
     
     updatePost(editingPostId, editContent);
     
+    // Store post ID before clearing edit state
+    const postIdToSelect = editingPostId;
+    
     // Clear edit state
     setEditingPostId(null);
     setEditContent('');
     setShowEditPreview(false);
+    
+    // Select the post after saving
+    setSelectedPostId(postIdToSelect);
   };
 
   if (isLoading) {
@@ -934,6 +952,7 @@ const HomePage: React.FC = () => {
                       } else if (e.key === 'Escape') {
                         e.preventDefault();
                         handleEditCancel();
+                        e.stopPropagation(); // Prevent global handler from also processing Escape
                       }
                     }}
                   />

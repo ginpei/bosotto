@@ -1,8 +1,9 @@
 # CLAUDE.md - Development Guide
 
 ## IMPORTANT Runtime Guidance
-- Always share a detailed plan before making code changes
-- Never make any changes automatically; wait for explicit request
+1. Never make any changes automatically; wait for explicit request
+2. Always share a detailed plan before making code changes
+3. Explain the reasoning behind your approach
 
 ## Commands
 - `npm run dev` - Run both client and server in development mode (DO NOT execute this command, ask the user to run it instead)
@@ -13,10 +14,9 @@
 - `npm run format` - Format code with Prettier
 - `npm run format:check` - Check formatting without modifying files
 
-## Runtime Guidance
+## Additional Runtime Guidance
 - Never run `npm run dev` directly; ask the user to run it manually
 - When suggesting the user run the app, remind them what to check or test
-- Explain the reasoning behind your approach
 - Never make git commits automatically; wait for explicit request
 - You may suggest making a commit when appropriate
 - Write commit messages that summarize conceptual changes rather than listing operations

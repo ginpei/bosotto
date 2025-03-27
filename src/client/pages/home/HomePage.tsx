@@ -46,6 +46,7 @@ const HomePage: React.FC = () => {
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);
   const postsContainerRef = useRef<HTMLDivElement>(null);
   const postRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const lastKeyPressTime = useRef<number>(0);
 
   // Function to focus and select text in edit textarea
   const focusAndSelectEditTextarea = useCallback(() => {
@@ -135,6 +136,16 @@ const HomePage: React.FC = () => {
         (isBodyOrPostsContainer || !isInInputField) && 
         !showHelpDialog && !showConfirmDialog && !showDeleteConfirmDialog) {
       e.preventDefault();
+      
+      // Check if keys are being pressed rapidly
+      const now = Date.now();
+      const timeSinceLastKeyPress = now - lastKeyPressTime.current;
+      const isRapidKeyPress = timeSinceLastKeyPress < 200; // 200ms threshold
+      lastKeyPressTime.current = now;
+      
+      // Use auto scroll behavior for rapid keypresses to prevent animation conflicts
+      const scrollBehavior: ScrollBehavior = isRapidKeyPress ? 'auto' : 'smooth';
+      
       const nonEditingPosts = posts.filter(post => post.id !== editingPostId);
       
       // If there are no posts to navigate to, keep the current selection
@@ -144,6 +155,30 @@ const HomePage: React.FC = () => {
       const visibleNonEditingPosts = nonEditingPosts.filter(post => 
         visiblePostIds.includes(post.id)
       );
+      
+      // Calculate viewport height for "close enough" check
+      const viewportHeight = window.innerHeight;
+      
+      // Helper to get positions of elements
+      const getPositionInfo = (postId: string) => {
+        const element = document.querySelector(`[data-post-id="${postId}"]`);
+        if (!element) return null;
+        
+        const rect = element.getBoundingClientRect();
+        return {
+          element,
+          top: rect.top,
+          bottom: rect.bottom,
+          height: rect.height,
+          id: postId
+        };
+      };
+
+      // Helper to check if an element is within one screen height
+      const isWithinScreenHeight = (rect: {top: number, bottom: number} | null) => {
+        if (!rect) return false;
+        return rect.top > -viewportHeight && rect.bottom < viewportHeight * 2;
+      };
       
       // Case 1: No post is selected yet
       if (selectedPostId === null) {
@@ -157,63 +192,37 @@ const HomePage: React.FC = () => {
           setTimeout(() => {
             const selectedElement = document.querySelector(`[data-post-id="${postToSelect.id}"]`);
             if (selectedElement) {
-              selectedElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              selectedElement.scrollIntoView({ behavior: scrollBehavior, block: 'nearest' });
             }
           }, 10);
           
           return;
         } else {
-          // No visible posts, fall back to selecting first/last post
-          const postIdToSelect = e.key === 'ArrowUp' 
-            ? nonEditingPosts[0].id
-            : nonEditingPosts[nonEditingPosts.length - 1].id;
-            
-          setSelectedPostId(postIdToSelect);
-          
-          // Scroll into view
-          setTimeout(() => {
-            const selectedElement = document.querySelector(`[data-post-id="${postIdToSelect}"]`);
-            if (selectedElement) {
-              selectedElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-          }, 10);
-          
-          return;
-        }
-      }
-      
-      // Case 2: A post is selected but not visible
-      const isSelectedPostVisible = visiblePostIds.includes(selectedPostId);
-      if (!isSelectedPostVisible) {
-        if (visibleNonEditingPosts.length > 0) {
-          // Always select first (top) visible post regardless of key
-          const postToSelect = visibleNonEditingPosts[0]; // First visible
-          
+          // No visible posts, select first post
+          const postToSelect = nonEditingPosts[0];
           setSelectedPostId(postToSelect.id);
           
           // Scroll into view
           setTimeout(() => {
             const selectedElement = document.querySelector(`[data-post-id="${postToSelect.id}"]`);
             if (selectedElement) {
-              selectedElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              selectedElement.scrollIntoView({ behavior: scrollBehavior, block: 'nearest' });
             }
           }, 10);
           
           return;
-        } else {
-          // If no posts are visible and we have a selection, keep the selection
-          return;
         }
       }
       
-      // Case 3: A post is selected and visible - use normal navigation
-      
-      // Normal post navigation when a post is already selected and visible
       // Find the current index
       const currentIndex = nonEditingPosts.findIndex(post => post.id === selectedPostId);
       if (currentIndex === -1) {
-        // Selected post not found (might have been deleted), select first post
-        setSelectedPostId(nonEditingPosts[0].id);
+        // Selected post not found (might have been deleted), select first visible post
+        if (visibleNonEditingPosts.length > 0) {
+          setSelectedPostId(visibleNonEditingPosts[0].id);
+        } else {
+          setSelectedPostId(nonEditingPosts[0].id);
+        }
         return;
       }
       
@@ -227,17 +236,57 @@ const HomePage: React.FC = () => {
         nextIndex = currentIndex < nonEditingPosts.length - 1 ? currentIndex + 1 : currentIndex;
       }
       
-      // Set the selected post ID
-      const newSelectedId = nonEditingPosts[nextIndex].id;
-      setSelectedPostId(newSelectedId);
+      // Get the next post ID
+      const nextPostId = nonEditingPosts[nextIndex].id;
       
-      // Scroll the selected post into view after a short delay to allow rendering
-      setTimeout(() => {
-        const selectedElement = document.querySelector(`[data-post-id="${newSelectedId}"]`);
-        if (selectedElement) {
-          selectedElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-      }, 10);
+      // Get position info for the target post
+      const nextPostInfo = getPositionInfo(nextPostId);
+      
+      // Check if the next post is visible
+      const isNextPostVisible = visiblePostIds.includes(nextPostId);
+      
+      // Case 2: Next post is visible - select it
+      if (isNextPostVisible) {
+        setSelectedPostId(nextPostId);
+        setTimeout(() => {
+          if (nextPostInfo?.element) {
+            nextPostInfo.element.scrollIntoView({ behavior: scrollBehavior, block: 'nearest' });
+          }
+        }, 10);
+        return;
+      }
+      
+      // Case 3: Next post is within one screen height - select it
+      if (isWithinScreenHeight(nextPostInfo)) {
+        setSelectedPostId(nextPostId);
+        setTimeout(() => {
+          if (nextPostInfo?.element) {
+            nextPostInfo.element.scrollIntoView({ behavior: scrollBehavior, block: 'nearest' });
+          }
+        }, 10);
+        return;
+      }
+      
+      // Case 4: Next post is too far away - select first visible post
+      if (visibleNonEditingPosts.length > 0) {
+        const postToSelect = visibleNonEditingPosts[0];
+        setSelectedPostId(postToSelect.id);
+        
+        setTimeout(() => {
+          const selectedElement = document.querySelector(`[data-post-id="${postToSelect.id}"]`);
+          if (selectedElement) {
+            selectedElement.scrollIntoView({ behavior: scrollBehavior, block: 'nearest' });
+          }
+        }, 10);
+      } else {
+        // If there are no visible posts but we have a next post, select it anyway
+        setSelectedPostId(nextPostId);
+        setTimeout(() => {
+          if (nextPostInfo?.element) {
+            nextPostInfo.element.scrollIntoView({ behavior: scrollBehavior, block: 'nearest' });
+          }
+        }, 10);
+      }
     }
 
     // Escape to cancel editing or blur new post textarea or deselect post
@@ -621,6 +670,7 @@ const HomePage: React.FC = () => {
               onClick={() => {
                 setSelectedPostId(post.id);
                 // Also scroll this element into view when clicked
+                // For clicks, always use smooth scrolling as it's not a rapid keypress
                 setTimeout(() => {
                   const selectedElement = document.querySelector(`[data-post-id="${post.id}"]`);
                   if (selectedElement) {

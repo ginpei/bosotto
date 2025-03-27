@@ -47,6 +47,13 @@ const HomePage: React.FC = () => {
   const postsContainerRef = useRef<HTMLDivElement>(null);
   const postRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const lastKeyPressTime = useRef<number>(0);
+  const isScrollingRef = useRef<boolean>(false);
+  const lastScrollDirectionRef = useRef<'up' | 'down' | null>(null);
+  // Cache for element positions to avoid excessive DOM queries and layout calculations
+  const positionCache = useRef<{
+    timestamp: number;
+    positions: Map<string, { top: number; bottom: number; height: number }>;
+  }>({ timestamp: 0, positions: new Map() });
 
   // Function to focus and select text in edit textarea
   const focusAndSelectEditTextarea = useCallback(() => {
@@ -64,7 +71,7 @@ const HomePage: React.FC = () => {
       console.error('Error loading posts:', error);
     }
   }, [error]);
-
+  
   // Handle edit cancellation
   const handleEditCancel = useCallback(() => {
     const currentPost = posts.find(p => p.id === editingPostId);
@@ -137,14 +144,31 @@ const HomePage: React.FC = () => {
         !showHelpDialog && !showConfirmDialog && !showDeleteConfirmDialog) {
       e.preventDefault();
       
-      // Check if keys are being pressed rapidly
+      // Check if keys are being pressed rapidly and track scroll direction
       const now = Date.now();
       const timeSinceLastKeyPress = now - lastKeyPressTime.current;
       const isRapidKeyPress = timeSinceLastKeyPress < 200; // 200ms threshold
       lastKeyPressTime.current = now;
       
-      // Use auto scroll behavior for rapid keypresses to prevent animation conflicts
-      const scrollBehavior: ScrollBehavior = isRapidKeyPress ? 'auto' : 'smooth';
+      
+      // Track scroll direction for improved selection logic
+      lastScrollDirectionRef.current = e.key === 'ArrowUp' ? 'up' : 'down';
+      
+      // Use auto scroll behavior for rapid keypresses and when animations are in progress
+      const scrollBehavior: ScrollBehavior = (isRapidKeyPress || isScrollingRef.current) ? 'auto' : 'smooth';
+      
+      // Cancel any ongoing scrolling animations by briefly setting overflow to hidden
+      // This prevents overlapping scroll animations from conflicting
+      if (isScrollingRef.current && postsContainerRef.current) {
+        const originalOverflow = postsContainerRef.current.style.overflow;
+        postsContainerRef.current.style.overflow = 'hidden';
+        // Force layout recalculation
+        postsContainerRef.current.getBoundingClientRect();
+        postsContainerRef.current.style.overflow = originalOverflow;
+      }
+      
+      // Set the scrolling flag to prevent new animations from starting while one is in progress
+      isScrollingRef.current = true;
       
       const nonEditingPosts = posts.filter(post => post.id !== editingPostId);
       
@@ -159,11 +183,45 @@ const HomePage: React.FC = () => {
       // Calculate viewport height for "close enough" check
       const viewportHeight = window.innerHeight;
       
-      // Helper to get positions of elements
+      // Helper to get positions of elements with caching
       const getPositionInfo = (postId: string) => {
         const element = document.querySelector(`[data-post-id="${postId}"]`);
         if (!element) return null;
         
+        const now = Date.now();
+        const cache = positionCache.current;
+        
+        // Only recalculate positions if cache is older than 100ms or during scroll
+        if (now - cache.timestamp > 100 || isScrollingRef.current) {
+          // Refresh the entire cache if it's stale
+          cache.positions.clear();
+          cache.timestamp = now;
+          
+          // Batch query all posts at once to avoid layout thrashing
+          document.querySelectorAll('[data-post-id]').forEach(el => {
+            const id = el.getAttribute('data-post-id');
+            if (id) {
+              const rect = el.getBoundingClientRect();
+              cache.positions.set(id, {
+                top: rect.top,
+                bottom: rect.bottom,
+                height: rect.height
+              });
+            }
+          });
+        }
+        
+        // Use cached position if available
+        const cachedPosition = cache.positions.get(postId);
+        if (cachedPosition) {
+          return {
+            element,
+            ...cachedPosition,
+            id: postId
+          };
+        }
+        
+        // Fallback to direct calculation if not in cache
         const rect = element.getBoundingClientRect();
         return {
           element,
@@ -193,6 +251,13 @@ const HomePage: React.FC = () => {
             const selectedElement = document.querySelector(`[data-post-id="${postToSelect.id}"]`);
             if (selectedElement) {
               selectedElement.scrollIntoView({ behavior: scrollBehavior, block: 'nearest' });
+              
+              // Clear the scrolling flag after scrolling completes
+              setTimeout(() => {
+                isScrollingRef.current = false;
+              }, scrollBehavior === 'smooth' ? 300 : 50);
+            } else {
+              isScrollingRef.current = false;
             }
           }, 10);
           
@@ -207,6 +272,13 @@ const HomePage: React.FC = () => {
             const selectedElement = document.querySelector(`[data-post-id="${postToSelect.id}"]`);
             if (selectedElement) {
               selectedElement.scrollIntoView({ behavior: scrollBehavior, block: 'nearest' });
+              
+              // Clear the scrolling flag after scrolling completes
+              setTimeout(() => {
+                isScrollingRef.current = false;
+              }, scrollBehavior === 'smooth' ? 300 : 50);
+            } else {
+              isScrollingRef.current = false;
             }
           }, 10);
           
@@ -251,6 +323,13 @@ const HomePage: React.FC = () => {
         setTimeout(() => {
           if (nextPostInfo?.element) {
             nextPostInfo.element.scrollIntoView({ behavior: scrollBehavior, block: 'nearest' });
+            
+            // Clear the scrolling flag after scrolling completes
+            setTimeout(() => {
+              isScrollingRef.current = false;
+            }, scrollBehavior === 'smooth' ? 300 : 50);
+          } else {
+            isScrollingRef.current = false;
           }
         }, 10);
         return;
@@ -262,20 +341,44 @@ const HomePage: React.FC = () => {
         setTimeout(() => {
           if (nextPostInfo?.element) {
             nextPostInfo.element.scrollIntoView({ behavior: scrollBehavior, block: 'nearest' });
+            
+            // Clear the scrolling flag after scrolling completes
+            setTimeout(() => {
+              isScrollingRef.current = false;
+            }, scrollBehavior === 'smooth' ? 300 : 50);
+          } else {
+            isScrollingRef.current = false;
           }
         }, 10);
         return;
       }
       
-      // Case 4: Next post is too far away - select first visible post
+      // Case 4: Next post is too far away - select first visible post in the direction of navigation
       if (visibleNonEditingPosts.length > 0) {
-        const postToSelect = visibleNonEditingPosts[0];
+        // Direction-aware selection based on navigation direction
+        let postToSelect;
+        
+        if (lastScrollDirectionRef.current === 'up') {
+          // When scrolling up, prefer the last (bottom-most) visible post
+          postToSelect = visibleNonEditingPosts[visibleNonEditingPosts.length - 1];
+        } else {
+          // When scrolling down, prefer the first (top-most) visible post
+          postToSelect = visibleNonEditingPosts[0];
+        }
+        
         setSelectedPostId(postToSelect.id);
         
         setTimeout(() => {
           const selectedElement = document.querySelector(`[data-post-id="${postToSelect.id}"]`);
           if (selectedElement) {
             selectedElement.scrollIntoView({ behavior: scrollBehavior, block: 'nearest' });
+            
+            // Clear the scrolling flag after scrolling completes (with a delay matching animation)
+            setTimeout(() => {
+              isScrollingRef.current = false;
+            }, scrollBehavior === 'smooth' ? 300 : 50);
+          } else {
+            isScrollingRef.current = false;
           }
         }, 10);
       } else {
@@ -284,6 +387,13 @@ const HomePage: React.FC = () => {
         setTimeout(() => {
           if (nextPostInfo?.element) {
             nextPostInfo.element.scrollIntoView({ behavior: scrollBehavior, block: 'nearest' });
+            
+            // Clear the scrolling flag after scrolling completes
+            setTimeout(() => {
+              isScrollingRef.current = false;
+            }, scrollBehavior === 'smooth' ? 300 : 50);
+          } else {
+            isScrollingRef.current = false;
           }
         }, 10);
       }
@@ -670,11 +780,28 @@ const HomePage: React.FC = () => {
               onClick={() => {
                 setSelectedPostId(post.id);
                 // Also scroll this element into view when clicked
-                // For clicks, always use smooth scrolling as it's not a rapid keypress
+                
+                // Cancel any ongoing scrolling animations
+                if (isScrollingRef.current && postsContainerRef.current) {
+                  const originalOverflow = postsContainerRef.current.style.overflow;
+                  postsContainerRef.current.style.overflow = 'hidden';
+                  postsContainerRef.current.getBoundingClientRect();
+                  postsContainerRef.current.style.overflow = originalOverflow;
+                }
+                
+                isScrollingRef.current = true;
+                
                 setTimeout(() => {
                   const selectedElement = document.querySelector(`[data-post-id="${post.id}"]`);
                   if (selectedElement) {
                     selectedElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    
+                    // Clear the scrolling flag after scrolling completes
+                    setTimeout(() => {
+                      isScrollingRef.current = false;
+                    }, 300); // Smooth scrolling takes ~300ms
+                  } else {
+                    isScrollingRef.current = false;
                   }
                 }, 10);
               }}

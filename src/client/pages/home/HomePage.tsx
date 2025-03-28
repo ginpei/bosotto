@@ -8,6 +8,7 @@ import './components/markdown-styles.css';
 import useKeydown from '../../shared/hooks/useKeydown';
 import HelpDialog from './components/HelpDialog';
 import ConfirmDialog from './components/ConfirmDialog';
+import SettingsDialog from './components/SettingsDialog';
 import { usePosts } from '../../shared/persistence/persistenceHooks';
 import { Post } from '../../shared/persistence/entryTypes';
 
@@ -33,6 +34,7 @@ const HomePage: React.FC = () => {
   const [newPostContent, setNewPostContent] = useState('');
   const [showPreview, setShowPreview] = useState(true);
   const [showHelpDialog, setShowHelpDialog] = useState(false);
+  const [showSettingsDialog, setShowSettingsDialog] = useState(false);
   const [editingPostId, setEditingPostId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
   const [showEditPreview, setShowEditPreview] = useState(true);
@@ -450,13 +452,13 @@ const HomePage: React.FC = () => {
         textareaRef.current?.blur();
       }
       // Deselect post if one is selected
-      else if (selectedPostId !== null && !showHelpDialog && !showConfirmDialog) {
+      else if (selectedPostId !== null && !showHelpDialog && !showConfirmDialog && !showSettingsDialog && !showDeleteConfirmDialog) {
         e.preventDefault();
         setSelectedPostId(null);
       }
       // Dialog components will handle their own Esc key events
     }
-  }, [editingPostId, handleEditCancel, textareaRef, posts, selectedPostId, showHelpDialog, showConfirmDialog, showDeleteConfirmDialog, visiblePostIds]);
+  }, [editingPostId, handleEditCancel, textareaRef, posts, selectedPostId, showHelpDialog, showConfirmDialog, showSettingsDialog, showDeleteConfirmDialog, visiblePostIds]);
 
   // Implement the actual edit start handler
   const handleEditStart = useCallback((post: Post) => {
@@ -691,6 +693,10 @@ const HomePage: React.FC = () => {
         isOpen={showHelpDialog}
         onClose={() => setShowHelpDialog(false)}
       />
+      <SettingsDialog
+        isOpen={showSettingsDialog}
+        onClose={() => setShowSettingsDialog(false)}
+      />
       <ConfirmDialog
         isOpen={showConfirmDialog}
         onClose={() => setShowConfirmDialog(false)}
@@ -713,8 +719,19 @@ const HomePage: React.FC = () => {
         cancelLabel="Cancel"
       />
       <div className="bg-white">
-        <div className="flex items-center p-2 bg-gray-100 border-b border-gray-300">
+        <div className="flex justify-between items-center p-2 bg-gray-100 border-b border-gray-300">
           <h1 className="text-lg">Bosotto</h1>
+          <button
+            onClick={() => setShowSettingsDialog(true)}
+            className="text-gray-500 hover:text-gray-700 p-1"
+            aria-label="Settings"
+            title="Settings"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </button>
         </div>
 
         {/* Post form */}

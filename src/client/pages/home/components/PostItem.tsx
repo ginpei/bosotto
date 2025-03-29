@@ -1,4 +1,5 @@
 import React from 'react';
+import { memo } from 'preact/compat';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
@@ -275,4 +276,46 @@ const PostItem: React.FC<PostItemProps> = ({
   );
 };
 
-export default PostItem;
+// Custom comparison function for memo optimization
+const arePropsEqual = (prevProps: PostItemProps, nextProps: PostItemProps) => {
+  // First, compare the post ID and content (most important for rendering decisions)
+  if (
+    prevProps.post.id !== nextProps.post.id ||
+    prevProps.post.content !== nextProps.post.content ||
+    prevProps.post.updatedAt !== nextProps.post.updatedAt
+  ) {
+    return false;
+  }
+
+  // Check selection state - affects styling
+  if (
+    (prevProps.selectedPostId === prevProps.post.id) !== 
+    (nextProps.selectedPostId === nextProps.post.id)
+  ) {
+    return false;
+  }
+
+  // Check editing state - major UI change
+  const wasEditing = prevProps.editingPostId === prevProps.post.id;
+  const isEditing = nextProps.editingPostId === nextProps.post.id;
+  
+  if (wasEditing !== isEditing) {
+    return false;
+  }
+
+  // If this post is being edited, check edit-specific props
+  if (isEditing) {
+    if (
+      prevProps.editContent !== nextProps.editContent ||
+      prevProps.showEditPreview !== nextProps.showEditPreview
+    ) {
+      return false;
+    }
+  }
+
+  // If we got here, no meaningful props have changed
+  return true;
+};
+
+// Export memoized component
+export default memo(PostItem, arePropsEqual);

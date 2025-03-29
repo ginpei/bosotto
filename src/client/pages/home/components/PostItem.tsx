@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { memo } from 'preact/compat';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -15,6 +15,53 @@ interface CodeProps {
   children?: React.ReactNode;
   [key: string]: any;
 }
+
+// Define markdown component props
+interface MarkdownProps {
+  content: string;
+}
+
+// Memoized markdown component that only re-renders when content changes
+const MemoizedMarkdown = memo(({ content }: MarkdownProps) => {
+  // Define the syntax highlighting and link components
+  const markdownComponents = useMemo(() => ({
+    code({node, inline, className, children, ...props}: CodeProps) {
+      const match = /language-(\w+)/.exec(className || '');
+      return !inline && match ? (
+        <SyntaxHighlighter
+          style={vs as any}
+          language={match[1]}
+          PreTag="div"
+          {...props}
+        >
+          {String(children).replace(/\n$/, '')}
+        </SyntaxHighlighter>
+      ) : (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      );
+    },
+    a({node, children, href, ...props}: any) {
+      return (
+        <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
+          {children}
+        </a>
+      );
+    }
+  }), []); // These components don't depend on any props, so they're created once
+
+  // Memoize the entire ReactMarkdown component
+  return useMemo(() => (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehypeSanitize]}
+      components={markdownComponents}
+    >
+      {content}
+    </ReactMarkdown>
+  ), [content, markdownComponents]);
+});
 
 interface PostItemProps {
   // Post data
@@ -159,38 +206,7 @@ const PostItem: React.FC<PostItemProps> = ({
       
       {editingPostId !== post.id ? (
         <div className="prose max-w-none">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeSanitize]}
-            components={{
-              code({node, inline, className, children, ...props}: CodeProps) {
-                const match = /language-(\w+)/.exec(className || '');
-                return !inline && match ? (
-                  <SyntaxHighlighter
-                    style={vs as any}
-                    language={match[1]}
-                    PreTag="div"
-                    {...props}
-                  >
-                    {String(children).replace(/\n$/, '')}
-                  </SyntaxHighlighter>
-                ) : (
-                  <code className={className} {...props}>
-                    {children}
-                  </code>
-                );
-              },
-              a({node, children, href, ...props}: any) {
-                return (
-                  <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
-                    {children}
-                  </a>
-                );
-              }
-            }}
-          >
-            {post.content}
-          </ReactMarkdown>
+          <MemoizedMarkdown content={post.content} />
         </div>
       ) : (
         <div className={`edit-mode edit-form-${post.id}`}>
@@ -236,38 +252,7 @@ const PostItem: React.FC<PostItemProps> = ({
           {/* Edit preview */}
           {showEditPreview && (
             <div className="w-full p-2 border border-gray-200 prose max-w-none overflow-auto">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeSanitize]}
-                components={{
-                  code({node, inline, className, children, ...props}: CodeProps) {
-                    const match = /language-(\w+)/.exec(className || '');
-                    return !inline && match ? (
-                      <SyntaxHighlighter
-                        style={vs as any}
-                        language={match[1]}
-                        PreTag="div"
-                        {...props}
-                      >
-                        {String(children).replace(/\n$/, '')}
-                      </SyntaxHighlighter>
-                    ) : (
-                      <code className={className} {...props}>
-                        {children}
-                      </code>
-                    );
-                  },
-                  a({node, children, href, ...props}: any) {
-                    return (
-                      <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
-                        {children}
-                      </a>
-                    );
-                  }
-                }}
-              >
-                {editContent}
-              </ReactMarkdown>
+              <MemoizedMarkdown content={editContent} />
             </div>
           )}
         </div>

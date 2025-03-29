@@ -604,13 +604,13 @@ const HomePage: React.FC = () => {
     };
   }, []);
 
-  const handleAddPost = () => {
+  const handleAddPost = useCallback(() => {
     if (!newPostContent.trim()) return;
     addPost(newPostContent);
     setNewPostContent('');
-  };
+  }, [newPostContent, addPost, setNewPostContent]);
   
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = useCallback(() => {
     // Only proceed if we have a valid post ID
     if (!pendingDeletePostId) return;
     
@@ -632,9 +632,20 @@ const HomePage: React.FC = () => {
     // Close dialog and clear pending delete
     setShowDeleteConfirmDialog(false);
     setPendingDeletePostId(null);
-  };
+  }, [
+    pendingDeletePostId, 
+    deletePost, 
+    editingPostId, 
+    selectedPostId, 
+    setEditingPostId, 
+    setEditContent, 
+    setShowEditPreview, 
+    setSelectedPostId, 
+    setShowDeleteConfirmDialog, 
+    setPendingDeletePostId
+  ]);
   
-  const handleConfirmEditSwitch = () => {
+  const handleConfirmEditSwitch = useCallback(() => {
     if (pendingEditPostId) {
       // Switching to a new post
       const postToEdit = posts.find(p => p.id === pendingEditPostId);
@@ -659,9 +670,20 @@ const HomePage: React.FC = () => {
         setSelectedPostId(postIdToSelect);
       }
     }
-  };
+  }, [
+    pendingEditPostId,
+    posts,
+    setEditingPostId,
+    setEditContent,
+    showPreview,
+    setShowEditPreview,
+    setPendingEditPostId,
+    focusAndSelectEditTextarea,
+    editingPostId,
+    setSelectedPostId
+  ]);
   
-  const handleEditSave = () => {
+  const handleEditSave = useCallback(() => {
     if (!editingPostId || !editContent.trim()) return;
     
     updatePost(editingPostId, editContent);
@@ -676,7 +698,15 @@ const HomePage: React.FC = () => {
     
     // Select the post after saving
     setSelectedPostId(postIdToSelect);
-  };
+  }, [
+    editingPostId, 
+    editContent, 
+    updatePost, 
+    setEditingPostId, 
+    setEditContent, 
+    setShowEditPreview, 
+    setSelectedPostId
+  ]);
 
   if (isLoading) {
     return (
